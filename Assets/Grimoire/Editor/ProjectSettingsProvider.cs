@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Grimoire.Editor {
+namespace Grimoire.Inspector {
 	public static class GrimoireSettingsProvider {
 		[SettingsProvider]
 		public static SettingsProvider CreateGrimoireSettingsProvider() {

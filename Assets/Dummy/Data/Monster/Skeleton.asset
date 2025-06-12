@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 11cd553b94d9649d0aaed86af87e7153, type: 3}
-  m_Name: Slime
+  m_Name: Skeleton
   m_EditorClassIdentifier: 
   displayName:
     m_TableReference:
@@ -21,7 +21,7 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  exp: 3
+  exp: 24
   references:
     version: 2
     RefIds: []
