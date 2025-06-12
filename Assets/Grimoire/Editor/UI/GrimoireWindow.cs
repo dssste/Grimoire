@@ -1,5 +1,6 @@
 using Alchemy.Editor;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -21,18 +22,23 @@ namespace Grimoire.Inspector {
 			if (vta == null) return;
 
 			var queryField = new TextField();
+			queryField.SetValueWithoutNotify("t:");
 			rootVisualElement.Add(queryField);
+			var v0 = new VisualElement();
+			v0.style.flexDirection = FlexDirection.Row;
+			rootVisualElement.Add(v0);
 			queryField.RegisterCallback<ChangeEvent<string>>(ev => {
-				string[] guids = AssetDatabase.FindAssets($"t:{ev.newValue}");
+				v0.Clear();
+				string[] guids = AssetDatabase.FindAssets(ev.newValue);
 				foreach (string guid in guids) {
 					var asset = AssetDatabase.LoadAssetAtPath<Object>(AssetDatabase.GUIDToAssetPath(guid));
 
 					if (asset != null) {
-						var editor = AlchemyEditor.CreateEditor(asset);
-						rootVisualElement.Add(new IMGUIContainer(() => {
-							editor.OnInspectorGUI();
-						}));
-						rootVisualElement.Add(editor.CreateInspectorGUI());
+						var ve = new VisualElement();
+						var so = new SerializedObject(asset);
+						ve.Bind(so);
+						ve.Add(AlchemyEditor.CreateEditor(so.targetObject).CreateInspectorGUI());
+						v0.Add(ve);
 					}
 				}
 			});
