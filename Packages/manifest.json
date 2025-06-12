@@ -1,7 +1,9 @@
 {
   "dependencies": {
+    "com.dss.nvimnvr": "https://github.com/dssste/NvimNvrEditor.git?path=/Assets/NvimNvr",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.inputsystem": "1.14.0",
+    "com.unity.localization": "1.5.4",
     "com.unity.test-framework": "1.5.1",
     "com.unity.modules.animation": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
