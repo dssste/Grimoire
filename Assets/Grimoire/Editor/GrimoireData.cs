@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Grimoire.Inspector {
 	[Serializable]
@@ -28,6 +29,20 @@ namespace Grimoire.Inspector {
 			}
 			EditorUtility.SetDirty(this);
 			AssetDatabase.SaveAssets();
+		}
+	}
+
+	[CustomEditor(typeof(GrimoireData))]
+	public class GrimoireDataInspector : Editor {
+		public override VisualElement CreateInspectorGUI() {
+			var root = new VisualElement();
+			root.Add(new HelpBox(
+					"This is a Grimoire data asset.\n" +
+					"It stores your open tabs and queries.\n" +
+					"You can select the active data in Project Settings → Grimoire.",
+					HelpBoxMessageType.Info
+			));
+			return root;
 		}
 	}
 }
