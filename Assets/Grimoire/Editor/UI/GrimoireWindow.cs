@@ -28,7 +28,9 @@ namespace Grimoire.Inspector {
 			rootVisualElement.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(uxml_path).Instantiate());
 
 			var grimoireData = ProjectSettings.grimoireData;
-			if (grimoireData != null) {
+			if (grimoireData == null) {
+				ShowNotification(new GUIContent("no persistant data selected, go to Project Settings/Grimoire to pick a persistant data asset"));
+			} else {
 				foreach (var tabData in grimoireData.tabs) {
 					AddTab(tabData);
 				}
@@ -123,7 +125,9 @@ namespace Grimoire.Inspector {
 				tabData.query = queryField.value;
 				tabData.sheetType = Enum.Parse<ISheet.Type>(typeDropdown.value);
 				var grimoireData = ProjectSettings.grimoireData;
-				if (grimoireData != null) {
+				if (grimoireData == null) {
+					ShowNotification(new GUIContent("no persistant data selected, go to Project Settings/Grimoire to pick a persistant data asset"));
+				} else {
 					grimoireData.UpdateOrAdd(tab.userData as TabData);
 				}
 				RefreshTab(tab);
@@ -132,7 +136,9 @@ namespace Grimoire.Inspector {
 			window.rootVisualElement.Q<Button>(className: QueryBox.closeButtonUssClassName).RegisterCallback<ClickEvent>(ev => {
 				window.Close();
 				var grimoireData = ProjectSettings.grimoireData;
-				if (grimoireData != null) {
+				if (grimoireData == null) {
+					ShowNotification(new GUIContent("no persistant data selected, go to Project Settings/Grimoire to pick a persistant data asset"));
+				} else {
 					grimoireData.Remove(tab.userData as TabData);
 				}
 				tab.RemoveFromHierarchy();
