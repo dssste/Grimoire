@@ -27,23 +27,25 @@ namespace Grimoire.Inspector {
 		private void CreateGUI() {
 			rootVisualElement.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(uxml_path).Instantiate());
 
-			AddTab("new tab");
+			AddTab("new tab", ISheet.Type.column_sheet);
 
 			var tabHeaderContainer = tabView.Q<VisualElement>(className: TabView.headerContainerClassName);
 			var newTabButton = new Button();
 			newTabButton.text = "+";
 			newTabButton.AddToClassList("new-tab-button");
 			newTabButton.RegisterCallback<ClickEvent>(ev => {
-				AddTab("new tab");
+				AddTab("new tab", ISheet.Type.column_sheet);
 				newTabButton.RemoveFromHierarchy();
 				tabHeaderContainer.Add(newTabButton);
 			});
 			tabHeaderContainer.Add(newTabButton);
 		}
 
-		private void AddTab(string name) {
+		private void AddTab(string name, ISheet.Type sheetType) {
 			var tab = new Tab(label: name);
-			tab.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(ColumnSheet.uxml_path).Instantiate());
+			tab.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(sheetType switch {
+				_ => ColumnSheet.uxml_path,
+			}).Instantiate());
 
 			// hijack the closing interaction with config
 			tab.closeable = true;
@@ -73,9 +75,9 @@ namespace Grimoire.Inspector {
 			queryField.value = "t:Monster";
 
 			window.rootVisualElement.Q<Button>(className: QueryBox.refreshButtonUssClassName).RegisterCallback<ClickEvent>(ev => {
-				var cs = tab.Q<ColumnSheet>();
-				cs.data = AssetDatabase.FindAssets(queryField.value);
-				cs.Rebuild();
+				var sheet = tab.Q<VisualElement>(className: ISheet.ussClass) as ISheet;
+				sheet.assetIds = AssetDatabase.FindAssets(queryField.value);
+				sheet.Rebuild();
 			});
 
 			window.rootVisualElement.Q<Button>(className: QueryBox.closeButtonUssClassName).RegisterCallback<ClickEvent>(ev => {
