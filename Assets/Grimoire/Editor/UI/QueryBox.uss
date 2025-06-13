@@ -1,12 +1,14 @@
 :root {
-	position: absolute;
-	/* flex-grow: 1; */
-}
-
-.query-box {
-	flex-direction: row;
+	padding: 10px;
+	margin: 0;
+	flex-grow: 1;
 }
 
 .query-field {
-	width: 50%;
+	flex-grow: 1;
+}
+
+.buttons-container{
+	justify-content: flex-end;
+	flex-direction: row;
 }

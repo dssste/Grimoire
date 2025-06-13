@@ -48,23 +48,43 @@ namespace Grimoire.Inspector {
 			// hijack the closing interaction with config
 			tab.closeable = true;
 			tab.Q<VisualElement>(className: Tab.closeButtonUssClassName).style.backgroundImage = new StyleBackground(EditorGUIUtility.IconContent("d__Popup@2x").image as Texture2D);
+			var header = tab.Q<VisualElement>(className: Tab.tabHeaderUssClassName);
 			tab.closing += () => {
-				ShowConfig(tab);
+				ShowConfig(tab, EditorGUIUtility.GUIToScreenRect(header.worldBound));
 				return false;
 			};
 
 			tabView.Add(tab);
+			tabView.selectedTabIndex = tabView.IndexOf(tab);
 		}
 
-		private void ShowConfig(Tab tab) {
-			tab.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(QueryBox.uxml_path).Instantiate());
-			var queryField = tab.Q<TextField>(className: QueryBox.queryFieldUssClassName);
-			var refreshButton = tab.Q<Button>(className: QueryBox.refreshButtonUssClassName);
+		private void ShowConfig(Tab tab, Rect rect) {
+			var window = CreateInstance<EditorWindow>();
+			window.ShowAsDropDown(rect, new Vector2(240f, 80f));
+			window.rootVisualElement.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(QueryBox.uxml_path).Instantiate());
+
+			var nameField = window.rootVisualElement.Q<TextField>(className: QueryBox.nameFieldUssClassName);
+			nameField.value = tab.label;
+			nameField.RegisterCallback<ChangeEvent<string>>(ev => {
+				tab.label = ev.newValue;
+			});
+
+			var queryField = window.rootVisualElement.Q<TextField>(className: QueryBox.queryFieldUssClassName);
 			queryField.value = "t:Monster";
-			refreshButton.RegisterCallback<ClickEvent>(ev => {
+
+			window.rootVisualElement.Q<Button>(className: QueryBox.refreshButtonUssClassName).RegisterCallback<ClickEvent>(ev => {
 				var cs = tab.Q<ColumnSheet>();
 				cs.data = AssetDatabase.FindAssets(queryField.value);
 				cs.Rebuild();
+			});
+
+			window.rootVisualElement.Q<Button>(className: QueryBox.closeButtonUssClassName).RegisterCallback<ClickEvent>(ev => {
+				window.Close();
+				var index = tabView.IndexOf(tab);
+				if (tabView.selectedTabIndex == index) {
+					tabView.selectedTabIndex = Mathf.Max(0, index - 1);
+				}
+				tab.RemoveFromHierarchy();
 			});
 		}
 
