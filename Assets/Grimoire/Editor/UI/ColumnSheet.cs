@@ -11,6 +11,7 @@ namespace Grimoire.Inspector {
 			column_sheet,
 		}
 
+		Type sheetType { get; }
 		string[] assetIds { set; }
 		void Rebuild();
 	}
@@ -19,6 +20,7 @@ namespace Grimoire.Inspector {
 	public partial class ColumnSheet : VisualElement, ISheet {
 		public static string uxml_path = GrimoireWindow.start_path + "Editor/UI/ColumnSheet.uxml";
 
+		public ISheet.Type sheetType => ISheet.Type.column_sheet;
 		public string[] assetIds { get; set; }
 
 		public ColumnSheet() {
@@ -34,9 +36,19 @@ namespace Grimoire.Inspector {
 					var ve = new VisualElement();
 					ve.AddToClassList("result-column");
 					var so = new SerializedObject(asset);
-					ve.Add(new Label(asset.name));
-					var inspector = Editor.CreateEditor(so.targetObject).CreateInspectorGUI();
-					inspector.Bind(so);
+					var objectField = new ObjectField();
+					objectField.value = asset;
+					objectField.enabledSelf = false;
+					ve.Add(objectField);
+					var editor = Editor.CreateEditor(so.targetObject);
+					var inspector = editor.CreateInspectorGUI();
+					if (inspector == null) {
+						inspector = new IMGUIContainer(() => {
+							editor.OnInspectorGUI();
+						});
+					} else {
+						inspector.Bind(so);
+					}
 					ve.Add(inspector);
 					resultContainer.Add(ve);
 				}

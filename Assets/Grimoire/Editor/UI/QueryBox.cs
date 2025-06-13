@@ -8,6 +8,7 @@ namespace Grimoire.Inspector {
 
 		public static string nameFieldUssClassName = "name-field";
 		public static string queryFieldUssClassName = "query-field";
+		public static string sheetTypeDropdownUssClassName = "sheet-type-dropdown";
 		public static string refreshButtonUssClassName = "refresh-button";
 		public static string closeButtonUssClassName = "close-button";
 	}

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -27,25 +28,33 @@ namespace Grimoire.Inspector {
 		private void CreateGUI() {
 			rootVisualElement.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(uxml_path).Instantiate());
 
-			AddTab("new tab", ISheet.Type.column_sheet);
+			AddTab(new() {
+				name = "monsters",
+				query = "t:Object glob:Editor/**",
+				sheetType = ISheet.Type.column_sheet
+			});
 
 			var tabHeaderContainer = tabView.Q<VisualElement>(className: TabView.headerContainerClassName);
 			var newTabButton = new Button();
 			newTabButton.text = "+";
 			newTabButton.AddToClassList("new-tab-button");
 			newTabButton.RegisterCallback<ClickEvent>(ev => {
-				AddTab("new tab", ISheet.Type.column_sheet);
+				var (tab, header) = AddTab(new() {
+					name = "new tab",
+					sheetType = ISheet.Type.column_sheet
+				});
+				tab.RegisterCallbackOnce<GeometryChangedEvent>(ev => {
+					ShowConfig(tab, EditorGUIUtility.GUIToScreenRect(header.worldBound));
+				});
 				newTabButton.RemoveFromHierarchy();
 				tabHeaderContainer.Add(newTabButton);
 			});
 			tabHeaderContainer.Add(newTabButton);
 		}
 
-		private void AddTab(string name, ISheet.Type sheetType) {
-			var tab = new Tab(label: name);
-			tab.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(sheetType switch {
-				_ => ColumnSheet.uxml_path,
-			}).Instantiate());
+		private (Tab tab, VisualElement header) AddTab(TabData tabData) {
+			var tab = new Tab(label: tabData.name);
+			tab.userData = tabData;
 
 			// hijack the closing interaction with config
 			tab.closeable = true;
@@ -58,26 +67,50 @@ namespace Grimoire.Inspector {
 
 			tabView.Add(tab);
 			tabView.selectedTabIndex = tabView.IndexOf(tab);
+			return (tab, header);
 		}
 
 		private void ShowConfig(Tab tab, Rect rect) {
+			var tabData = tab.userData as TabData;
 			var window = CreateInstance<EditorWindow>();
-			window.ShowAsDropDown(rect, new Vector2(240f, 80f));
+			window.ShowAsDropDown(rect, new Vector2(240f, 98f));
 			window.rootVisualElement.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(QueryBox.uxml_path).Instantiate());
 
+			var typeDropdown = window.rootVisualElement.Q<DropdownField>(className: QueryBox.sheetTypeDropdownUssClassName);
+			typeDropdown.choices = ((ISheet.Type[])Enum.GetValues(typeof(ISheet.Type)))
+				.OrderBy(e => e)
+				.Select(e => e.ToString())
+				.ToList();
+			typeDropdown.value = tabData.sheetType.ToString();
+
 			var nameField = window.rootVisualElement.Q<TextField>(className: QueryBox.nameFieldUssClassName);
-			nameField.value = tab.label;
+			nameField.value = tabData.name;
 			nameField.RegisterCallback<ChangeEvent<string>>(ev => {
-				tab.label = ev.newValue;
+				tabData.name = ev.newValue;
+				tab.label = tabData.name;
 			});
 
 			var queryField = window.rootVisualElement.Q<TextField>(className: QueryBox.queryFieldUssClassName);
-			queryField.value = "t:Monster";
+			queryField.value = tabData.query;
 
 			window.rootVisualElement.Q<Button>(className: QueryBox.refreshButtonUssClassName).RegisterCallback<ClickEvent>(ev => {
-				var sheet = tab.Q<VisualElement>(className: ISheet.ussClass) as ISheet;
-				sheet.assetIds = AssetDatabase.FindAssets(queryField.value);
-				sheet.Rebuild();
+				tabData.query = queryField.value;
+				tabData.sheetType = Enum.Parse<ISheet.Type>(typeDropdown.value);
+
+				if (string.IsNullOrWhiteSpace(tabData.query)) {
+					tab.Clear();
+				} else {
+					var sheet = tab.Q<VisualElement>(className: ISheet.ussClass) as ISheet;
+					if (sheet == null || sheet.sheetType != tabData.sheetType) {
+						tab.Clear();
+						tab.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(tabData.sheetType switch {
+							_ => ColumnSheet.uxml_path,
+						}).Instantiate());
+						sheet = tab.Q<VisualElement>(className: ISheet.ussClass) as ISheet;
+					}
+					sheet.assetIds = AssetDatabase.FindAssets(tabData.query);
+					sheet.Rebuild();
+				}
 			});
 
 			window.rootVisualElement.Q<Button>(className: QueryBox.closeButtonUssClassName).RegisterCallback<ClickEvent>(ev => {

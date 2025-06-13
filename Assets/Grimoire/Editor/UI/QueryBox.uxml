@@ -3,9 +3,10 @@
 	<Grimoire.Inspector.QueryBox class="query-box">
 		<ui:TextField class="name-field"/>
 		<ui:TextField class="query-field"/>
+		<ui:DropdownField class="sheet-type-dropdown"/>
 		<ui:VisualElement class="buttons-container">
-			<ui:Button text="refresh" class="refresh-button"/>
 			<ui:Button text="close tab" class="close-button"/>
+			<ui:Button text="refresh" class="refresh-button"/>
 		</ui:VisualElement>
 	</Grimoire.Inspector.QueryBox>
 </ui:UXML>
