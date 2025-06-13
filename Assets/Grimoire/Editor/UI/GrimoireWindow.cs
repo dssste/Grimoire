@@ -28,11 +28,12 @@ namespace Grimoire.Inspector {
 		private void CreateGUI() {
 			rootVisualElement.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(uxml_path).Instantiate());
 
-			AddTab(new() {
+			var (tab, _) = AddTab(new() {
 				name = "monsters",
-				query = "t:Object glob:Editor/**",
+				query = "t:Monster",
 				sheetType = ISheet.Type.column_sheet
 			});
+			RefreshTab(tab);
 
 			var tabHeaderContainer = tabView.Q<VisualElement>(className: TabView.headerContainerClassName);
 			var newTabButton = new Button();
@@ -96,21 +97,7 @@ namespace Grimoire.Inspector {
 			window.rootVisualElement.Q<Button>(className: QueryBox.refreshButtonUssClassName).RegisterCallback<ClickEvent>(ev => {
 				tabData.query = queryField.value;
 				tabData.sheetType = Enum.Parse<ISheet.Type>(typeDropdown.value);
-
-				if (string.IsNullOrWhiteSpace(tabData.query)) {
-					tab.Clear();
-				} else {
-					var sheet = tab.Q<VisualElement>(className: ISheet.ussClass) as ISheet;
-					if (sheet == null || sheet.sheetType != tabData.sheetType) {
-						tab.Clear();
-						tab.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(tabData.sheetType switch {
-							_ => ColumnSheet.uxml_path,
-						}).Instantiate());
-						sheet = tab.Q<VisualElement>(className: ISheet.ussClass) as ISheet;
-					}
-					sheet.assetIds = AssetDatabase.FindAssets(tabData.query);
-					sheet.Rebuild();
-				}
+				RefreshTab(tab);
 			});
 
 			window.rootVisualElement.Q<Button>(className: QueryBox.closeButtonUssClassName).RegisterCallback<ClickEvent>(ev => {
@@ -121,6 +108,24 @@ namespace Grimoire.Inspector {
 				}
 				tab.RemoveFromHierarchy();
 			});
+		}
+
+		private void RefreshTab(Tab tab) {
+			var tabData = tab.userData as TabData;
+			if (string.IsNullOrWhiteSpace(tabData.query)) {
+				tab.Clear();
+			} else {
+				var sheet = tab.Q<VisualElement>(className: ISheet.ussClass) as ISheet;
+				if (sheet == null || sheet.sheetType != tabData.sheetType) {
+					tab.Clear();
+					tab.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(tabData.sheetType switch {
+						_ => ColumnSheet.uxml_path,
+					}).Instantiate());
+					sheet = tab.Q<VisualElement>(className: ISheet.ussClass) as ISheet;
+				}
+				sheet.assetIds = AssetDatabase.FindAssets(tabData.query);
+				sheet.Rebuild();
+			}
 		}
 
 		// foreach (var guid in AssetDatabase.FindAssets(ev.newValue)) {
