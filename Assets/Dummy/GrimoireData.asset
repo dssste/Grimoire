@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 943d9750c9eb04345ac2fa0c92be0e87, type: 3}
   m_Name: GrimoireData
   m_EditorClassIdentifier: 
-  tabs: []
+  tabs:
+  - name: monsters
+    query: t:Monster
+    sheetType: 0
   selectedTabIndex: 0

@@ -1,22 +1,43 @@
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Grimoire.Inspector {
-	public static class GrimoireSettings {
+	public static class ProjectSettings {
+		private static string user_settings_key => "Grimoire_Data_Guid";
+
+		private static GrimoireData _grimoireData;
+		public static GrimoireData grimoireData {
+			get {
+				if (_grimoireData == null) {
+					var guid = EditorUserSettings.GetConfigValue(user_settings_key);
+					if (string.IsNullOrEmpty(guid)) return null;
+
+					_grimoireData = AssetDatabase.LoadAssetAtPath<GrimoireData>(AssetDatabase.GUIDToAssetPath(guid));
+				}
+				return _grimoireData;
+			}
+			private set {
+				_grimoireData = value;
+				if (value == null) {
+					EditorUserSettings.SetConfigValue(user_settings_key, "");
+				} else {
+					EditorUserSettings.SetConfigValue(user_settings_key, AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(value)));
+				}
+			}
+		}
+
 		[SettingsProvider]
 		public static SettingsProvider CreateGrimoireSettingsProvider() {
 			return new SettingsProvider("Project/Grimoire", SettingsScope.Project) {
 				guiHandler = (searchContext) => {
-					var selectedData = LoadData();
+					var selectedData = grimoireData;
 
 					EditorGUILayout.BeginHorizontal();
 
 					EditorGUI.BeginChangeCheck();
 					selectedData = (GrimoireData)EditorGUILayout.ObjectField("Grimoire Data", selectedData, typeof(GrimoireData), false, GUILayout.ExpandWidth(true));
 					if (EditorGUI.EndChangeCheck()) {
-						SaveData(selectedData);
+						grimoireData = selectedData;
 					}
 
 					if (GUILayout.Button("+", GUILayout.Width(20f))) {
@@ -25,7 +46,7 @@ namespace Grimoire.Inspector {
 							var asset = ScriptableObject.CreateInstance<GrimoireData>();
 							AssetDatabase.CreateAsset(asset, path);
 							AssetDatabase.SaveAssets();
-							SaveData(asset);
+							grimoireData = asset;
 						}
 					}
 
@@ -37,23 +58,6 @@ namespace Grimoire.Inspector {
 					}
 				}
 			};
-		}
-
-		private static string user_settings_key => "Grimoire_Data_Guid";
-
-		public static void SaveData(GrimoireData data) {
-			if (data == null) {
-				EditorUserSettings.SetConfigValue(user_settings_key, "");
-			} else {
-				EditorUserSettings.SetConfigValue(user_settings_key, AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(data)));
-			}
-		}
-
-		public static GrimoireData LoadData() {
-			var guid = EditorUserSettings.GetConfigValue(user_settings_key);
-			if (string.IsNullOrEmpty(guid)) return null;
-
-			return AssetDatabase.LoadAssetAtPath<GrimoireData>(AssetDatabase.GUIDToAssetPath(guid));
 		}
 	}
 }

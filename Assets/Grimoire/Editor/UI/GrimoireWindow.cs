@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -28,12 +27,13 @@ namespace Grimoire.Inspector {
 		private void CreateGUI() {
 			rootVisualElement.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(uxml_path).Instantiate());
 
-			var (tab, _) = AddTab(new() {
-				name = "monsters",
-				query = "t:Monster",
-				sheetType = ISheet.Type.column_sheet
-			});
-			RefreshTab(tab);
+			var grimoireData = ProjectSettings.grimoireData;
+			if (grimoireData != null) {
+				foreach (var tabData in grimoireData.tabs) {
+					AddTab(tabData);
+				}
+				RefreshTab(tabView.activeTab);
+			}
 
 			var tabHeaderContainer = tabView.Q<VisualElement>(className: TabView.headerContainerClassName);
 			var newTabButton = new Button();
@@ -47,6 +47,7 @@ namespace Grimoire.Inspector {
 				tab.RegisterCallbackOnce<GeometryChangedEvent>(ev => {
 					ShowConfig(tab, EditorGUIUtility.GUIToScreenRect(header.worldBound));
 				});
+				tabView.selectedTabIndex = tabView.IndexOf(tab);
 				newTabButton.RemoveFromHierarchy();
 				tabHeaderContainer.Add(newTabButton);
 			});
@@ -67,8 +68,32 @@ namespace Grimoire.Inspector {
 			};
 
 			tabView.Add(tab);
-			tabView.selectedTabIndex = tabView.IndexOf(tab);
 			return (tab, header);
+		}
+
+		private void RefreshTab(Tab tab) {
+			var tabData = tab.userData as TabData;
+			if (string.IsNullOrWhiteSpace(tabData.query)) {
+				tab.Clear();
+			} else {
+				var sheet = tab.Q<VisualElement>(className: ISheet.ussClass) as ISheet;
+				if (sheet == null || sheet.sheetType != tabData.sheetType) {
+					tab.Clear();
+					tab.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(tabData.sheetType switch {
+						_ => ColumnSheet.uxml_path,
+					}).Instantiate());
+					sheet = tab.Q<VisualElement>(className: ISheet.ussClass) as ISheet;
+				}
+				sheet.assetIds = AssetDatabase.FindAssets(tabData.query);
+				sheet.Rebuild();
+			}
+		}
+
+		private void CloseTab(Tab tab) {
+			if (tabView.activeTab == tab && tabView.selectedTabIndex > 0) {
+				tabView.selectedTabIndex -= 1;
+			}
+			tab.RemoveFromHierarchy();
 		}
 
 		private void ShowConfig(Tab tab, Rect rect) {
@@ -97,35 +122,21 @@ namespace Grimoire.Inspector {
 			window.rootVisualElement.Q<Button>(className: QueryBox.refreshButtonUssClassName).RegisterCallback<ClickEvent>(ev => {
 				tabData.query = queryField.value;
 				tabData.sheetType = Enum.Parse<ISheet.Type>(typeDropdown.value);
+				var grimoireData = ProjectSettings.grimoireData;
+				if (grimoireData != null) {
+					grimoireData.UpdateOrAdd(tab.userData as TabData);
+				}
 				RefreshTab(tab);
 			});
 
 			window.rootVisualElement.Q<Button>(className: QueryBox.closeButtonUssClassName).RegisterCallback<ClickEvent>(ev => {
 				window.Close();
-				var index = tabView.IndexOf(tab);
-				if (tabView.selectedTabIndex == index) {
-					tabView.selectedTabIndex = Mathf.Max(0, index - 1);
+				var grimoireData = ProjectSettings.grimoireData;
+				if (grimoireData != null) {
+					grimoireData.Remove(tab.userData as TabData);
 				}
 				tab.RemoveFromHierarchy();
 			});
-		}
-
-		private void RefreshTab(Tab tab) {
-			var tabData = tab.userData as TabData;
-			if (string.IsNullOrWhiteSpace(tabData.query)) {
-				tab.Clear();
-			} else {
-				var sheet = tab.Q<VisualElement>(className: ISheet.ussClass) as ISheet;
-				if (sheet == null || sheet.sheetType != tabData.sheetType) {
-					tab.Clear();
-					tab.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(tabData.sheetType switch {
-						_ => ColumnSheet.uxml_path,
-					}).Instantiate());
-					sheet = tab.Q<VisualElement>(className: ISheet.ussClass) as ISheet;
-				}
-				sheet.assetIds = AssetDatabase.FindAssets(tabData.query);
-				sheet.Rebuild();
-			}
 		}
 
 		// foreach (var guid in AssetDatabase.FindAssets(ev.newValue)) {
