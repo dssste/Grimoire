@@ -13,6 +13,7 @@
 }
 
 .result-column {
+	padding: 10px;
 	border-right-width: 1px;
 	border-right-color: gray;
 }
