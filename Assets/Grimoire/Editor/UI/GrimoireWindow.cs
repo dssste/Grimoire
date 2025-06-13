@@ -57,7 +57,15 @@ namespace Grimoire.Inspector {
 		}
 
 		private void ShowConfig(Tab tab) {
-			Debug.Log(tab);
+			tab.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(QueryBox.uxml_path).Instantiate());
+			var queryField = tab.Q<TextField>(className: QueryBox.queryFieldUssClassName);
+			var refreshButton = tab.Q<Button>(className: QueryBox.refreshButtonUssClassName);
+			queryField.value = "t:Monster";
+			refreshButton.RegisterCallback<ClickEvent>(ev => {
+				var cs = tab.Q<ColumnSheet>();
+				cs.data = AssetDatabase.FindAssets(queryField.value);
+				cs.Rebuild();
+			});
 		}
 
 		// foreach (var guid in AssetDatabase.FindAssets(ev.newValue)) {

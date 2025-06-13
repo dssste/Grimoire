@@ -1,7 +1,7 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
 	<Style src="project://database/Assets/Grimoire/Editor/UI/QueryBox.uss?fileID=7433441132597879392&amp;guid=366f160c1540547bb8aaea630942ca25&amp;type=3#QueryBox"/>
 	<Grimoire.Inspector.QueryBox class="query-box">
-		<ui:TextField name="query-field" class="query-field"/>
-		<ui:Button name="query-button" text="query"/>
+		<ui:TextField class="query-field"/>
+		<ui:Button text="refresh" class="refresh-button"/>
 	</Grimoire.Inspector.QueryBox>
 </ui:UXML>
