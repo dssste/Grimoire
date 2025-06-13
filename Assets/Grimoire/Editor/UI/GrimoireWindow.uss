@@ -1,12 +1,7 @@
-:root {
-	flex-grow: 1;
-}
-
-.tab-view {
-	flex-grow: 1;
-	flex-direction: column-reverse;
-}
-
-.unity-tab-view__content-container{
+:root,
+.tab-view,
+.unity-tab-view__content-container,
+.unity-tab,
+.unity-tab__content-container {
 	flex-grow: 1;
 }

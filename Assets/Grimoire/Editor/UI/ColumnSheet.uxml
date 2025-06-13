@@ -1,8 +1,8 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
 	<ui:Template name="QueryBox" src="project://database/Assets/Grimoire/Editor/UI/QueryBox.uxml?fileID=9197481963319205126&amp;guid=e0a834d206a6a4d1bab435c3ff8de861&amp;type=3#QueryBox"/>
 	<Style src="project://database/Assets/Grimoire/Editor/UI/ColumnSheet.uss?fileID=7433441132597879392&amp;guid=97d742bba0b774ce2bdb7f2b6b84c83f&amp;type=3#ColumnSheet"/>
-	<Grimoire.Inspector.ColumnSheet>
+	<Grimoire.Inspector.ColumnSheet class="column-sheet">
+		<ui:ScrollView mode="Horizontal" name="result-container" class="result-container"/>
 		<ui:Instance template="QueryBox"/>
-		<ui:VisualElement name="result-container" class="result-container"/>
 	</Grimoire.Inspector.ColumnSheet>
 </ui:UXML>

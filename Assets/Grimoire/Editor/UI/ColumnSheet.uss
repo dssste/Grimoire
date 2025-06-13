@@ -2,7 +2,37 @@
 	flex-grow: 1;
 }
 
+.column-sheet {
+	flex-grow: 1;
+}
+
 .result-container {
 	flex-grow: 1;
-	flex-direction: row;
+	height: 100%;
+	width: 100%;
+}
+
+.result-column {
+	border-right-width: 1px;
+	border-right-color: gray;
+}
+
+.unity-base-slider {
+	margin: 0;
+}
+
+.unity-scroller__low-button {
+	display: none;
+}
+
+.unity-scroller__high-button {
+	display: none;
+}
+
+.unity-base-slider__tracker {
+	display: none;
+}
+
+.unity-base-slider__dragger-border {
+	display: none;
 }

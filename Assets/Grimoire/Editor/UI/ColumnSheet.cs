@@ -1,4 +1,3 @@
-using Alchemy.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -21,12 +20,12 @@ namespace Grimoire.Inspector {
 				resultContainer.Clear();
 				foreach (var guid in AssetDatabase.FindAssets(q.queryField.value)) {
 					var asset = AssetDatabase.LoadAssetAtPath<Object>(AssetDatabase.GUIDToAssetPath(guid));
-
 					if (asset != null) {
 						var ve = new VisualElement();
+						ve.AddToClassList("result-column");
 						var so = new SerializedObject(asset);
 						ve.Add(new Label(asset.name));
-						var inspector = AlchemyEditor.CreateEditor(so.targetObject).CreateInspectorGUI();
+						var inspector = Editor.CreateEditor(so.targetObject).CreateInspectorGUI();
 						inspector.Bind(so);
 						ve.Add(inspector);
 						resultContainer.Add(ve);
