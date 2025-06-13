@@ -30,7 +30,7 @@ namespace Grimoire.Inspector {
 			var grimoireData = ProjectSettings.grimoireData;
 			if (grimoireData == null) {
 				ShowNotification(new GUIContent("no persistant data selected, go to Project Settings/Grimoire to pick a persistant data asset"));
-			} else {
+			} else if (grimoireData.tabs.Count > 0) {
 				foreach (var tabData in grimoireData.tabs) {
 					AddTab(tabData);
 				}
