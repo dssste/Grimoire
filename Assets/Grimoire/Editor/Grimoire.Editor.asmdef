@@ -1,6 +1,6 @@
 {
     "name": "Grimoire.Editor",
-    "rootNamespace": "",
+    "rootNamespace": "Grimoire.Inspector",
     "references": [
         "GUID:5fd453cd0d182422093c4a764fd5eadb"
     ],

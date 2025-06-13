@@ -1,0 +1,8 @@
+:root {
+	flex-grow: 1;
+}
+
+.result-container {
+	flex-grow: 1;
+	flex-direction: row;
+}

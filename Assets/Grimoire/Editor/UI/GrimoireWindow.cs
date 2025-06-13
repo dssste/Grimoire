@@ -8,9 +8,9 @@ using UnityEngine.UIElements;
 namespace Grimoire.Inspector {
 	public class GrimoireWindow : EditorWindow {
 #if (USE_DEV_PATH)
-		private static string start_path = "Assets/Grimoire/";
+		public static string start_path = "Assets/Grimoire/";
 #else
-		private static string start_path = "Packages/com.dss.grimoire/";
+		public static string start_path = "Packages/com.dss.grimoire/";
 #endif
 
 		private static string uxml_path = start_path + "Editor/UI/GrimoireWindow.uxml";
@@ -29,10 +29,9 @@ namespace Grimoire.Inspector {
 			var root = vta.Instantiate();
 			rootVisualElement.Add(root);
 
-			root.Q<TabView>().Add(new Tab(label: "style 3"));
-
-			// var queryField = new TextField();
-			// rootVisualElement.Add(queryField);
+			var tab1 = new Tab(label: "columns");
+			tab1.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(ColumnSheet.uxml_path).Instantiate());
+			root.Q<TabView>().Add(tab1);
 
 			// var v0 = new VisualElement();
 			// v0.style.flexDirection = FlexDirection.Row;
@@ -46,44 +45,6 @@ namespace Grimoire.Inspector {
 			// v0.Add(v2);
 
 			// queryField.RegisterCallback<ChangeEvent<string>>(ev => {
-			// 	var data = AssetDatabase.FindAssets(ev.newValue);
-			// 	if (data.Length <= 0) return;
-			//
-			// 	loo = CreateInstance<ListOfObject>();
-			// 	loo.data = data.Select(guid => AssetDatabase.LoadAssetAtPath<Object>(AssetDatabase.GUIDToAssetPath(guid))).ToList();
-			//
-			// 	var multiColumnListView = new MultiColumnListView {
-			// 		bindingPath = "data",
-			// 		showBoundCollectionSize = false,
-			// 		virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight
-			// 	};
-			// 	multiColumnListView.columns.Add(new Column { bindingPath = "name", title = "Name", stretchable = true });
-			// 	multiColumnListView.columns.Add(new Column { bindingPath = "name", title = "Name", stretchable = true });
-			// 	multiColumnListView.columns.Add(new Column { bindingPath = "name", title = "Name", stretchable = true });
-			// 	multiColumnListView.columns.Add(new Column { bindingPath = "name", title = "Name", stretchable = true });
-			// 	multiColumnListView.columns.Add(new Column { bindingPath = "name", title = "Name", stretchable = true });
-			// 	multiColumnListView.columns.Add(new Column { bindingPath = "name", title = "Name", stretchable = true });
-			// 	multiColumnListView.columns.Add(new Column {
-			// 		bindingPath = "script",
-			// 		title = "Moves",
-			// 		stretchable = true,
-			// 		makeCell = () => {
-			// 			return new Label("asdf");
-			// 			var movesMultiColumnListView = new MultiColumnListView {
-			// 				showBoundCollectionSize = false,
-			// 				virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight,
-			// 			};
-			// 			movesMultiColumnListView.columns.Add(new Column { bindingPath = "displayName", title = "Name", stretchable = true });
-			// 			movesMultiColumnListView.columns.Add(new Column { bindingPath = "exp", title = "Power", stretchable = true });
-			// 			return movesMultiColumnListView;
-			// 		}
-			// 	});
-			//
-			// 	var so = new SerializedObject(loo);
-			// 	multiColumnListView.Bind(so);
-			// 	rootVisualElement.Add(multiColumnListView);
-			// });
-
 			// 	var lv = rootVisualElement.Q<MultiColumnListView>();
 			//
 			// 	foreach (var guid in AssetDatabase.FindAssets(ev.newValue)) {

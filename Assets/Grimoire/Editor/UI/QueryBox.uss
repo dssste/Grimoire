@@ -1,0 +1,11 @@
+:root {
+	flex-grow: 1;
+}
+
+.query-box {
+	flex-direction: row;
+}
+
+.query-field {
+	width: 50%;
+}

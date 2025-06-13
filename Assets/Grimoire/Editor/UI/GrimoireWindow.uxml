@@ -1,11 +1,4 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
 	<Style src="project://database/Assets/Grimoire/Editor/UI/GrimoireWindow.uss?fileID=7433441132597879392&amp;guid=bc7ee685138a84b7696c4140351cc9f2&amp;type=3#GrimoireWindow"/>
-	<ui:TabView class="tab-view">
-		<ui:Tab label="style 1">
-			<ui:Label text="UXML tab: This is some content for the first Tab."/>
-		</ui:Tab>
-		<ui:Tab label="style 2">
-			<ui:Label text="UXML tab: This is some content for the second Tab."/>
-		</ui:Tab>
-	</ui:TabView>
+	<ui:TabView class="tab-view"/>
 </ui:UXML>
