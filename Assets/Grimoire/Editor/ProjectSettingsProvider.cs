@@ -5,19 +5,19 @@ namespace Grimoire.Inspector {
 	public static class ProjectSettings {
 		private static string user_settings_key => "Grimoire_Data_Guid";
 
-		private static GrimoireData _grimoireData;
-		public static GrimoireData grimoireData {
+		private static GrimoireSession _grimoireSession;
+		public static GrimoireSession grimoireSession {
 			get {
-				if (_grimoireData == null) {
+				if (_grimoireSession == null) {
 					var guid = EditorUserSettings.GetConfigValue(user_settings_key);
 					if (string.IsNullOrEmpty(guid)) return null;
 
-					_grimoireData = AssetDatabase.LoadAssetAtPath<GrimoireData>(AssetDatabase.GUIDToAssetPath(guid));
+					_grimoireSession = AssetDatabase.LoadAssetAtPath<GrimoireSession>(AssetDatabase.GUIDToAssetPath(guid));
 				}
-				return _grimoireData;
+				return _grimoireSession;
 			}
 			private set {
-				_grimoireData = value;
+				_grimoireSession = value;
 				if (value == null) {
 					EditorUserSettings.SetConfigValue(user_settings_key, "");
 				} else {
@@ -30,23 +30,23 @@ namespace Grimoire.Inspector {
 		public static SettingsProvider CreateGrimoireSettingsProvider() {
 			return new SettingsProvider("Project/Grimoire", SettingsScope.Project) {
 				guiHandler = (searchContext) => {
-					var selectedData = grimoireData;
+					var selectedData = grimoireSession;
 
 					EditorGUILayout.BeginHorizontal();
 
 					EditorGUI.BeginChangeCheck();
-					selectedData = (GrimoireData)EditorGUILayout.ObjectField("Grimoire Data", selectedData, typeof(GrimoireData), false, GUILayout.ExpandWidth(true));
+					selectedData = (GrimoireSession)EditorGUILayout.ObjectField("Grimoire Data", selectedData, typeof(GrimoireSession), false, GUILayout.ExpandWidth(true));
 					if (EditorGUI.EndChangeCheck()) {
-						grimoireData = selectedData;
+						grimoireSession = selectedData;
 					}
 
 					if (GUILayout.Button("+", GUILayout.Width(20f))) {
 						var path = EditorUtility.SaveFilePanelInProject("Create GrimoireData", "GrimoireData", "asset", "Choose a location for the new GrimoireData asset");
 						if (!string.IsNullOrEmpty(path)) {
-							var asset = ScriptableObject.CreateInstance<GrimoireData>();
+							var asset = ScriptableObject.CreateInstance<GrimoireSession>();
 							AssetDatabase.CreateAsset(asset, path);
 							AssetDatabase.SaveAssets();
-							grimoireData = asset;
+							grimoireSession = asset;
 						}
 					}
 

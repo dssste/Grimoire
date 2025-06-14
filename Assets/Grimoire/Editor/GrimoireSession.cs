@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,30 +13,36 @@ namespace Grimoire.Inspector {
 		public ISheet.Type sheetType;
 	}
 
-	public class GrimoireData : ScriptableObject {
+	public class GrimoireSession : ScriptableObject {
 		public List<TabData> tabs;
 		public int selectedTabIndex;
 
-		public void Remove(TabData data) {
+		public int Remove(TabData data) {
 			if (tabs.Remove(data)) {
 				EditorUtility.SetDirty(this);
 				AssetDatabase.SaveAssets();
 			}
+			return 0;
 		}
 
-		public void UpdateOrAdd(TabData data) {
+		public int UpdateOrAdd(TabData data) {
 			if (!tabs.Contains(data)) {
 				tabs.Add(data);
 			}
 			EditorUtility.SetDirty(this);
 			AssetDatabase.SaveAssets();
+			return 0;
 		}
 	}
 
-	[CustomEditor(typeof(GrimoireData))]
+#if (!USE_DEV_PATH)
+	[CustomEditor(typeof(GrimoireSession))]
 	public class GrimoireDataInspector : Editor {
 		public override VisualElement CreateInspectorGUI() {
 			var root = new VisualElement();
+			var scriptField = new PropertyField(new SerializedObject(target).FindProperty("m_Script"));
+			scriptField.SetEnabled(false);
+			root.Add(scriptField);
 			root.Add(new HelpBox(
 					"This is a Grimoire data asset.\n" +
 					"It stores your open tabs and queries.\n" +
@@ -45,4 +52,5 @@ namespace Grimoire.Inspector {
 			return root;
 		}
 	}
+#endif
 }

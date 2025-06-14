@@ -38,7 +38,7 @@ namespace Grimoire.Inspector {
 					var so = new SerializedObject(asset);
 					var objectField = new ObjectField();
 					objectField.value = asset;
-					objectField.enabledSelf = false;
+					objectField.SetEnabled(false);
 					ve.Add(objectField);
 					var editor = Editor.CreateEditor(so.targetObject);
 					var inspector = editor.CreateInspectorGUI();
