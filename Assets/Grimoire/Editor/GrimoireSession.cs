@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
+#if (!USE_DEV_PATH)
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
+#endif
 
 namespace Grimoire.Inspector {
 	[Serializable]
@@ -18,20 +20,26 @@ namespace Grimoire.Inspector {
 		public int selectedTabIndex;
 
 		public int Remove(TabData data) {
-			if (tabs.Remove(data)) {
+			var index = tabs.IndexOf(data);
+			if (index >= 0) {
+				if (selectedTabIndex == index && selectedTabIndex > 0) {
+					selectedTabIndex -= 1;
+				}
+				tabs.Remove(data);
 				EditorUtility.SetDirty(this);
 				AssetDatabase.SaveAssets();
 			}
-			return 0;
+			return selectedTabIndex;
 		}
 
 		public int UpdateOrAdd(TabData data) {
 			if (!tabs.Contains(data)) {
 				tabs.Add(data);
+				selectedTabIndex = tabs.Count - 1;
 			}
 			EditorUtility.SetDirty(this);
 			AssetDatabase.SaveAssets();
-			return 0;
+			return selectedTabIndex;
 		}
 	}
 

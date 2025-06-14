@@ -27,13 +27,14 @@ namespace Grimoire.Inspector {
 		private void CreateGUI() {
 			rootVisualElement.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(uxml_path).Instantiate());
 
-			var grimoireData = ProjectSettings.grimoireSession;
-			if (grimoireData == null) {
+			var session = ProjectSettings.grimoireSession;
+			if (session == null) {
 				ShowNotification(new GUIContent("no persistant data selected, go to Project Settings/Grimoire to pick a persistant data asset"));
-			} else if (grimoireData.tabs.Count > 0) {
-				foreach (var tabData in grimoireData.tabs) {
+			} else if (session.tabs.Count > 0) {
+				foreach (var tabData in session.tabs) {
 					AddTab(tabData);
 				}
+				tabView.selectedTabIndex = session.selectedTabIndex;
 				RefreshTab(tabView.activeTab);
 			}
 
@@ -42,14 +43,20 @@ namespace Grimoire.Inspector {
 			newTabButton.text = "+";
 			newTabButton.AddToClassList("new-tab-button");
 			newTabButton.RegisterCallback<ClickEvent>(ev => {
-				var (tab, header) = AddTab(new() {
+				var tabData = new TabData() {
 					name = "new tab",
 					sheetType = ISheet.Type.column_sheet
-				});
+				};
+				var (tab, header) = AddTab(tabData);
 				tab.RegisterCallbackOnce<GeometryChangedEvent>(ev => {
 					ShowConfig(tab, EditorGUIUtility.GUIToScreenRect(header.worldBound));
 				});
-				tabView.selectedTabIndex = tabView.IndexOf(tab);
+				var session = ProjectSettings.grimoireSession;
+				if (session == null) {
+					tabView.selectedTabIndex = tabView.IndexOf(tab);
+				} else {
+					tabView.selectedTabIndex = session.UpdateOrAdd(tabData);
+				}
 				newTabButton.RemoveFromHierarchy();
 				tabHeaderContainer.Add(newTabButton);
 			});
@@ -91,13 +98,6 @@ namespace Grimoire.Inspector {
 			}
 		}
 
-		private void CloseTab(Tab tab) {
-			if (tabView.activeTab == tab && tabView.selectedTabIndex > 0) {
-				tabView.selectedTabIndex -= 1;
-			}
-			tab.RemoveFromHierarchy();
-		}
-
 		private void ShowConfig(Tab tab, Rect rect) {
 			var tabData = tab.userData as TabData;
 			var window = CreateInstance<EditorWindow>();
@@ -124,24 +124,27 @@ namespace Grimoire.Inspector {
 			window.rootVisualElement.Q<Button>(className: QueryBox.refreshButtonUssClassName).RegisterCallback<ClickEvent>(ev => {
 				tabData.query = queryField.value;
 				tabData.sheetType = Enum.Parse<ISheet.Type>(typeDropdown.value);
-				var grimoireData = ProjectSettings.grimoireSession;
-				if (grimoireData == null) {
+				var session = ProjectSettings.grimoireSession;
+				if (session == null) {
 					ShowNotification(new GUIContent("no persistant data selected, go to Project Settings/Grimoire to pick a persistant data asset"));
 				} else {
-					grimoireData.UpdateOrAdd(tab.userData as TabData);
+					session.UpdateOrAdd(tab.userData as TabData);
 				}
 				RefreshTab(tab);
 			});
 
 			window.rootVisualElement.Q<Button>(className: QueryBox.closeButtonUssClassName).RegisterCallback<ClickEvent>(ev => {
 				window.Close();
-				var grimoireData = ProjectSettings.grimoireSession;
-				if (grimoireData == null) {
+				var session = ProjectSettings.grimoireSession;
+				if (session == null) {
 					ShowNotification(new GUIContent("no persistant data selected, go to Project Settings/Grimoire to pick a persistant data asset"));
+					if (tabView.activeTab == tab && tabView.selectedTabIndex > 0) {
+						tabView.selectedTabIndex -= 1;
+					}
 				} else {
-					grimoireData.Remove(tab.userData as TabData);
+					tabView.selectedTabIndex = session.Remove(tab.userData as TabData);
 				}
-				CloseTab(tab);
+				tab.RemoveFromHierarchy();
 			});
 		}
 
