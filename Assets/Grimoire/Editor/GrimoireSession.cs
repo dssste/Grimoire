@@ -17,29 +17,42 @@ namespace Grimoire.Inspector {
 
 	public class GrimoireSession : ScriptableObject {
 		public List<TabData> tabs;
-		public int selectedTabIndex;
+		[SerializeField] private int _selectedTabIndex;
+		public int selectedTabIndex {
+			get => _selectedTabIndex;
+			private set => _selectedTabIndex = value;
+		}
 
-		public int Remove(TabData data) {
+		public void Remove(TabData data) {
 			var index = tabs.IndexOf(data);
 			if (index >= 0) {
-				if (selectedTabIndex == index && selectedTabIndex > 0) {
-					selectedTabIndex -= 1;
-				}
 				tabs.Remove(data);
 				EditorUtility.SetDirty(this);
 				AssetDatabase.SaveAssets();
 			}
-			return selectedTabIndex;
 		}
 
-		public int UpdateOrAdd(TabData data) {
+		public void UpdateOrAdd(TabData data) {
 			if (!tabs.Contains(data)) {
 				tabs.Add(data);
-				selectedTabIndex = tabs.Count - 1;
 			}
 			EditorUtility.SetDirty(this);
 			AssetDatabase.SaveAssets();
-			return selectedTabIndex;
+		}
+
+		public void SetSelected(int index) {
+			selectedTabIndex = index;
+			EditorUtility.SetDirty(this);
+			AssetDatabase.SaveAssets();
+		}
+
+		public void Reorder(int fromIndex, int toIndex, int selectedTabIndex) {
+			var temp = tabs[toIndex];
+			tabs[toIndex] = tabs[fromIndex];
+			tabs[fromIndex] = temp;
+			this.selectedTabIndex = selectedTabIndex;
+			EditorUtility.SetDirty(this);
+			AssetDatabase.SaveAssets();
 		}
 	}
 
