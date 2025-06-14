@@ -1,6 +1,4 @@
-# Grimoire (WIP, Experimental)
-
-**Grimoire** is a Unity Editor extension for visualizing & editing your static data assets in a tabular way.
+**Grimoire (WIP, Experimental)** is a Unity Editor extension for visualizing & editing your static data assets in a tabular way.
 
 ## ✨ Installation
 
