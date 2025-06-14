@@ -17,9 +17,9 @@ public class TableView : VisualElement {
 			foreach (var (j, cell) in col.OrderBy(kvp => kvp.Key)) {
 				var cellContainer = new VisualElement();
 				cellContainer.style.borderBottomWidth = 1f;
-				cellContainer.style.borderBottomColor = Color.gold;
+				cellContainer.style.borderBottomColor = Color.gray;
 				cellContainer.style.borderRightWidth = 1f;
-				cellContainer.style.borderRightColor = Color.gold;
+				cellContainer.style.borderRightColor = Color.gray;
 				cellContainer.Add(cell switch {
 					string s => new Label(s),
 					VisualElement ve => ve,

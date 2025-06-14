@@ -16,12 +16,20 @@ namespace Grimoire.Inspector {
 			var resultContainer = this.Q<ScrollView>("result-container");
 			resultContainer.Clear();
 
-			var rows = new Dictionary<string, Dictionary<int, PropertyField>>();
+			var rows = new Dictionary<string, Dictionary<int, VisualElement>>();
 			for (int i = 0; i < assetIds.Length; i++) {
 				var guid = assetIds[i];
 				var path = AssetDatabase.GUIDToAssetPath(guid);
 				var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
 				if (asset != null) {
+					if (!rows.ContainsKey("asset")) {
+						rows["asset"] = new();
+					}
+					var objectField = new ObjectField();
+					objectField.value = asset;
+					objectField.SetEnabled(false);
+					rows["asset"][i] = objectField;
+
 					var fieldIterator = new SerializedObject(asset).GetIterator();
 					fieldIterator.NextVisible(true);
 					while (fieldIterator.NextVisible(false)) {
@@ -31,7 +39,7 @@ namespace Grimoire.Inspector {
 						}
 						var field = new PropertyField();
 						field.BindProperty(fieldIterator);
-						rows[displayName][i] = field;
+						rows[displayName][i + 1] = field;
 					}
 				}
 			}
@@ -39,7 +47,6 @@ namespace Grimoire.Inspector {
 			var tableView = new TableView();
 			var cells = new Dictionary<int, Dictionary<int, object>>();
 			int counter = 1;
-			cells[0] = new() { { 0, "asset" } };
 			foreach (var (displayName, col) in rows) {
 				cells[counter] = col.ToDictionary(kvp => kvp.Key + 2, kvp => kvp.Value as object);
 				cells[counter][1] = displayName;
