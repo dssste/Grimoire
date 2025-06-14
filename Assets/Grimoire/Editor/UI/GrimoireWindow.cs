@@ -40,7 +40,7 @@ namespace Grimoire.Inspector {
 				}
 				tabView.activeTabChanged += (fromTab, toTab) => {
 					session.SetSelected(tabView.selectedTabIndex);
-					var sheet = tabView.activeTab.Q<VisualElement>(className: ISheet.ussClass) as ISheet;
+					var sheet = tabView.activeTab.GetSheet();
 					if (sheet == null) {
 						RefreshTab(tabView.activeTab);
 					}
@@ -57,7 +57,7 @@ namespace Grimoire.Inspector {
 			newTabButton.RegisterCallback<ClickEvent>(ev => {
 				var tabData = new TabData() {
 					name = "new tab",
-					sheetType = ISheet.Type.column_sheet
+					sheetType = ISheet.Type.inspector_columns
 				};
 				var (tab, header) = AddTab(tabData);
 				tab.RegisterCallbackOnce<GeometryChangedEvent>(ev => {
@@ -97,13 +97,11 @@ namespace Grimoire.Inspector {
 			if (string.IsNullOrWhiteSpace(tabData.query)) {
 				tab.Clear();
 			} else {
-				var sheet = tab.Q<VisualElement>(className: ISheet.ussClass) as ISheet;
-				if (sheet == null || sheet.sheetType != tabData.sheetType) {
+				var sheet = tab.GetSheet();
+				if (sheet == null || sheet.GetSheetType() != tabData.sheetType) {
 					tab.Clear();
-					tab.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(tabData.sheetType switch {
-						_ => ColumnSheet.uxml_path,
-					}).Instantiate());
-					sheet = tab.Q<VisualElement>(className: ISheet.ussClass) as ISheet;
+					tab.Add(tabData.sheetType.GetVisualTreeAsset().Instantiate());
+					sheet = tab.GetSheet();
 				}
 				sheet.assetIds = AssetDatabase.FindAssets(tabData.query);
 				sheet.Rebuild();
@@ -114,7 +112,7 @@ namespace Grimoire.Inspector {
 			var tabData = tab.userData as TabData;
 			var window = CreateInstance<EditorWindow>();
 			window.ShowAsDropDown(rect, new Vector2(240f, 98f));
-			window.rootVisualElement.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(QueryBox.uxml_path).Instantiate());
+			window.rootVisualElement.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(start_path + QueryBox.uxml_path).Instantiate());
 
 			var typeDropdown = window.rootVisualElement.Q<DropdownField>(className: QueryBox.sheetTypeDropdownUssClassName);
 			typeDropdown.choices = ((ISheet.Type[])Enum.GetValues(typeof(ISheet.Type)))

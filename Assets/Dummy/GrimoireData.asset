@@ -16,4 +16,7 @@ MonoBehaviour:
   - name: monsters
     query: t:Monster
     sheetType: 0
+  - name: npcs
+    query: 't: Npc'
+    sheetType: 1
   _selectedTabIndex: 1

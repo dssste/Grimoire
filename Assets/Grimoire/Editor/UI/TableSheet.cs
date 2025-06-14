@@ -4,44 +4,9 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Grimoire.Inspector {
-	public interface ISheet {
-		public enum Type {
-			inspector_columns,
-			table,
-		}
-
-		string[] assetIds { set; }
-		void Rebuild();
-	}
-
-	public static class SheetExtensions {
-		public static ISheet GetSheet(this Tab tab) {
-			foreach (var ve in tab.Query<VisualElement>().Build()) {
-				if (ve is ISheet sheet && sheet != null) {
-					return sheet;
-				}
-			}
-			return null;
-		}
-
-		public static VisualTreeAsset GetVisualTreeAsset(this ISheet.Type type) {
-			return AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(GrimoireWindow.start_path + type switch {
-				ISheet.Type.table => TableSheet.uxml_path,
-				_ => ColumnSheet.uxml_path,
-			});
-		}
-
-		public static ISheet.Type GetSheetType(this ISheet sheet) {
-			return sheet switch{
-				TableSheet => ISheet.Type.table,
-				_ => ISheet.Type.inspector_columns,
-			};
-		}
-	}
-
 	[UxmlElement]
-	public partial class ColumnSheet : VisualElement, ISheet {
-		public static string uxml_path = "Editor/UI/ColumnSheet.uxml";
+	public partial class TableSheet : VisualElement, ISheet {
+		public static string uxml_path = "Editor/UI/TableSheet.uxml";
 
 		public string[] assetIds { get; set; }
 
