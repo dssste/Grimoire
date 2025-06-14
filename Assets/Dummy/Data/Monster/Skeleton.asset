@@ -22,6 +22,17 @@ MonoBehaviour:
     m_WaitForCompletion: 0
     m_LocalVariables: []
   exp: 24
+  type: 0
+  icon: {fileID: 0}
+  prefab: {fileID: 0}
+  health: 2
+  speed: 12
+  spawnPosition: {x: 0, y: 0, z: 0}
+  mainColor: {r: 0, g: 0, b: 0, a: 0}
+  isBoss: 0
+  canFly: 0
+  drops: []
+  evolution: {fileID: 0}
   references:
     version: 2
     RefIds: []

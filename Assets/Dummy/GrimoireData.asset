@@ -16,4 +16,4 @@ MonoBehaviour:
   - name: monsters
     query: t:Monster
     sheetType: 0
-  selectedTabIndex: 0
+  _selectedTabIndex: 1
