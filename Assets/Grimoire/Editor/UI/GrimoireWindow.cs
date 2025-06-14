@@ -158,27 +158,5 @@ namespace Grimoire.Inspector {
 				}
 			});
 		}
-
-		// foreach (var guid in AssetDatabase.FindAssets(ev.newValue)) {
-		// 	var asset = AssetDatabase.LoadAssetAtPath<Object>(AssetDatabase.GUIDToAssetPath(guid));
-		//
-		// 	if (asset != null) {
-		// 		var ve = new VisualElement();
-		// 		var so = new SerializedObject(asset);
-		// 		ve.Add(new Label(asset.name));
-		// 		var inspector = AlchemyEditor.CreateEditor(so.targetObject).CreateInspectorGUI();
-		// 		inspector.Bind(so);
-		// 		inspector.RegisterCallbackOnce<GeometryChangedEvent>(ev => {
-		// 			inspector.Query<Label>(className: "unity-property-field__label").ForEach(ve => {
-		// 				ve.RemoveFromHierarchy();
-		// 				v1.Add(ve);
-		// 				ve.pickingMode = PickingMode.Ignore;
-		// 			});
-		// 		});
-		// 		ve.Add(inspector);
-		// 		v2.Add(ve);
-		// 	}
-		// }
-		// });
 	}
 }

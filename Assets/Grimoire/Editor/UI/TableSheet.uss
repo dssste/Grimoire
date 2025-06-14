@@ -3,6 +3,7 @@
 }
 
 .table-sheet {
+	flex-direction: row;
 	flex-grow: 1;
 }
 
