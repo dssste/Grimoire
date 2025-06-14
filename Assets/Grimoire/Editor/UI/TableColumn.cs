@@ -6,23 +6,11 @@ public class TableColumn : VisualElement {
 	private readonly List<TableHeader> rows = new();
 	public delegate void RowClicked(int col, int row);
 
-	public event RowClicked OnRowClicked;
-
 	public int ColumnId = 0;
 
-	public TableColumn(string name, Color colmen, Color text, float textSize, Color border, float size, bool rtl, bool state, bool bold) {
-		if (state) {
-			if (rtl) {
-				style.borderLeftColor = border;
-				style.borderLeftWidth = size;
-			} else {
-				style.borderRightColor = border;
-				style.borderRightWidth = size;
-			}
-		}
+	public TableColumn(string name) {
 		style.width = Length.Percent(100);
-		TableHeader header = new(name, colmen, text, textSize, rtl, bold);
-		header.SetAsColumn(border, size);
+		TableHeader header = new(name);
 		rows.Add(header);
 		Add(header);
 	}
@@ -31,7 +19,6 @@ public class TableColumn : VisualElement {
 		rows.Add(header);
 		Add(header);
 		header.RegisterCallback<MouseUpEvent>((_) => {
-			OnRowClicked?.Invoke(ColumnId, IndexOf(header));
 			Color def = header.style.backgroundColor.value;
 			header.style.backgroundColor = def * .8f;
 			header.style.backgroundColor = def;
