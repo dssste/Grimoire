@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -23,8 +22,6 @@ namespace Grimoire.Inspector {
 				var path = AssetDatabase.GUIDToAssetPath(guid);
 				var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
 				if (asset != null) {
-					var ve = new VisualElement();
-					ve.AddToClassList("result-column");
 					var fieldIterator = new SerializedObject(asset).GetIterator();
 					fieldIterator.NextVisible(true);
 					while (fieldIterator.NextVisible(false)) {
@@ -36,21 +33,24 @@ namespace Grimoire.Inspector {
 						field.BindProperty(fieldIterator);
 						rows[displayName][i] = field;
 					}
-					resultContainer.Add(ve);
 				}
 			}
 
-			var sb = new StringBuilder();
-			foreach (var kvp in rows) {
-				sb.Clear();
-				sb.Append(kvp.Key + ": ");
-				sb.AppendJoin(", ", kvp.Value.Select(kvp2 => $"{kvp2.Key} {kvp2.Value}"));
-				Debug.Log(sb.ToString());
+			var tableView = new TableView();
+			var cells = new Dictionary<int, Dictionary<int, object>>();
+			int counter = 1;
+			cells[0] = new() { { 0, "asset" } };
+			foreach (var (displayName, col) in rows) {
+				cells[counter] = col.ToDictionary(kvp => kvp.Key + 2, kvp => kvp.Value as object);
+				cells[counter][1] = displayName;
+				counter++;
 			}
+			tableView.cellsSourceByCol = cells;
+			tableView.Rebuild();
+			resultContainer.Add(tableView);
 		}
 	}
 }
-
 
 // var ve = new VisualElement();
 // ve.AddToClassList("result-column");
