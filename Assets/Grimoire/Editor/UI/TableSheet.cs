@@ -22,13 +22,13 @@ namespace Grimoire.Inspector {
 				var path = AssetDatabase.GUIDToAssetPath(guid);
 				var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
 				if (asset != null) {
-					if (!rows.ContainsKey("asset")) {
-						rows["asset"] = new();
+					if (!rows.ContainsKey("Asset")) {
+						rows["Asset"] = new();
 					}
 					var objectField = new ObjectField();
 					objectField.value = asset;
 					objectField.SetEnabled(false);
-					rows["asset"][i] = objectField;
+					rows["Asset"][i] = objectField;
 
 					var fieldIterator = new SerializedObject(asset).GetIterator();
 					fieldIterator.NextVisible(true);
@@ -39,22 +39,26 @@ namespace Grimoire.Inspector {
 						}
 						var field = new PropertyField();
 						field.BindProperty(fieldIterator);
-						rows[displayName][i + 1] = field;
+						rows[displayName][i] = field;
 					}
 				}
 			}
 
 			var tableView = new TableView();
-			var cells = new Dictionary<int, Dictionary<int, object>>();
-			int counter = 1;
-			foreach (var (displayName, col) in rows) {
-				cells[counter] = col.ToDictionary(kvp => kvp.Key + 2, kvp => kvp.Value as object);
-				cells[counter][1] = displayName;
-				counter++;
-			}
-			tableView.cellsSourceByCol = cells;
+			tableView.cols = TableView.Transpose(ToTableRows(rows));
 			tableView.Rebuild();
 			resultContainer.Add(tableView);
+		}
+
+		private static Dictionary<int, Dictionary<int, object>> ToTableRows(Dictionary<string, Dictionary<int, VisualElement>> from) {
+			var rows = new Dictionary<int, Dictionary<int, object>>();
+			int i = 0;
+			foreach (var (displayName, row) in from) {
+				rows[i] = row.ToDictionary(kvp => kvp.Key + 1, kvp => kvp.Value as object);
+				rows[i][0] = displayName;
+				i++;
+			}
+			return rows;
 		}
 	}
 }
