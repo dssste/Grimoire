@@ -37,7 +37,14 @@ namespace Grimoire.Inspector {
 						var displayName = fieldIterator.displayName;
 						var field = new PropertyField();
 						field.BindProperty(fieldIterator);
-						field.label = "";
+						if (fieldIterator.type == "LocalizedString") {
+							field.label = "Localized String";
+							field.style.marginLeft = new Length(-5f);
+							field.style.marginRight = new Length(5f);
+							field.style.minWidth = new Length(280);
+						} else {
+							field.label = "";
+						}
 
 						if (!rows.ContainsKey(displayName)) {
 							rows[displayName] = new();
@@ -48,7 +55,8 @@ namespace Grimoire.Inspector {
 			}
 
 			var tableView = new TableView();
-			tableView.colsData = TableView.Transpose(ToTableRows(rows));
+			// tableView.colsData = TableView.Transpose(ToTableRows(rows));
+			tableView.colsData = ToTableRows(rows);
 			tableView.Rebuild();
 			resultContainer.Add(tableView);
 		}

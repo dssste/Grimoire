@@ -19,31 +19,39 @@ namespace Grimoire.Inspector {
 			rows.Clear();
 			if (colsData.Count <= 0) return;
 
-			foreach (var (i, col) in colsData.OrderBy(kvp => kvp.Key)) {
+			var maxRowIndex = colsData.Max(kvp => kvp.Key);
+			var maxColIndex = colsData.Max(kvp => kvp.Value.Max(kvp => kvp.Key));
+
+			for (int i = 0; i <= maxRowIndex; i++) {
 				var colContainer = new VisualElement();
 				Add(colContainer);
-				foreach (var (j, cellData) in col.OrderBy(kvp => kvp.Key)) {
+
+				if (!colsData.TryGetValue(i, out var col)) continue;
+
+				for (int j = 0; j <= maxColIndex; j++) {
 					var cellContainer = new VisualElement();
 					cellContainer.style.borderBottomWidth = 1f;
 					cellContainer.style.borderBottomColor = Color.gray;
 					cellContainer.style.borderRightWidth = 1f;
 					cellContainer.style.borderRightColor = Color.gray;
-					cellContainer.Add(cellData switch {
-						string s => new Label(s),
-						VisualElement ve => ve,
-						System.Func<VisualElement> func => func(),
-						_ => new Label("empty cell"),
-					});
+					colContainer.Add(cellContainer);
 					if (!rows.TryGetValue(j, out var row)) {
 						row = new();
 						rows[j] = row;
 					}
 					rows[j].Add(cellContainer);
-					colContainer.Add(cellContainer);
+
+					col.TryGetValue(j, out var cellData);
+					cellContainer.Add(cellData switch {
+						string s => new Label(s),
+						VisualElement ve => ve,
+						System.Func<VisualElement> func => func(),
+						_ => new VisualElement(),
+					});
 				}
 			}
 			RegisterCallbackOnce<GeometryChangedEvent>(_ => {
-				foreach (var (j, cells) in rows.OrderBy(kvp => kvp.Key)) {
+				foreach (var (j, cells) in rows) {
 					var height = cells.Max(ve => {
 						return ve[0].resolvedStyle.height + 3;
 					});

@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: GrimoireData
   m_EditorClassIdentifier: 
   tabs:
-  - name: monsters
-    query: t:Monster
+  - name: all
+    query: t:Monster t:Npc t:Item
     sheetType: 1
-  - name: npcs
-    query: 't: Npc'
+  - name: monsters
+    query: 't: Monster'
     sheetType: 1
   _selectedTabIndex: 0
