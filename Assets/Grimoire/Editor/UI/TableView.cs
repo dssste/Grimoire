@@ -110,7 +110,7 @@ namespace Grimoire.Inspector {
 						string s => s,
 						VisualElement ve => ve.GetType(),
 						System.Func<VisualElement> func => func().GetType(),
-						_ => new Label("empty cell"),
+						_ => "empty cell",
 					} + ", ");
 				}
 				Debug.Log(sb);
