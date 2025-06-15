@@ -22,31 +22,33 @@ namespace Grimoire.Inspector {
 				var path = AssetDatabase.GUIDToAssetPath(guid);
 				var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
 				if (asset != null) {
-					if (!rows.ContainsKey("Asset")) {
-						rows["Asset"] = new();
-					}
 					var objectField = new ObjectField();
 					objectField.value = asset;
 					objectField.SetEnabled(false);
+
+					if (!rows.ContainsKey("Asset")) {
+						rows["Asset"] = new();
+					}
 					rows["Asset"][i] = objectField;
 
 					var fieldIterator = new SerializedObject(asset).GetIterator();
 					fieldIterator.NextVisible(true);
 					while (fieldIterator.NextVisible(false)) {
 						var displayName = fieldIterator.displayName;
+						var field = new PropertyField();
+						field.BindProperty(fieldIterator);
+						field.label = "";
+
 						if (!rows.ContainsKey(displayName)) {
 							rows[displayName] = new();
 						}
-						var field = new PropertyField();
-						field.BindProperty(fieldIterator);
 						rows[displayName][i] = field;
-						field.label = "";
 					}
 				}
 			}
 
 			var tableView = new TableView();
-			tableView.cols = TableView.Transpose(ToTableRows(rows));
+			tableView.colsData = TableView.Transpose(ToTableRows(rows));
 			tableView.Rebuild();
 			resultContainer.Add(tableView);
 		}

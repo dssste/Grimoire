@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Unity.EditorCoroutines.Editor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -22,14 +23,13 @@ namespace Grimoire.Inspector {
 			foreach (var (i, col) in colsData.OrderBy(kvp => kvp.Key)) {
 				var colContainer = new VisualElement();
 				Add(colContainer);
-				foreach (var (j, cell) in col.OrderBy(kvp => kvp.Key)) {
+				foreach (var (j, cellData) in col.OrderBy(kvp => kvp.Key)) {
 					var cellContainer = new VisualElement();
 					cellContainer.style.borderBottomWidth = 1f;
 					cellContainer.style.borderBottomColor = Color.gray;
 					cellContainer.style.borderRightWidth = 1f;
 					cellContainer.style.borderRightColor = Color.gray;
-					cellContainer.style.justifyContent = Justify.Center;
-					cellContainer.Add(cell switch {
+					cellContainer.Add(cellData switch {
 						string s => new Label(s),
 						VisualElement ve => ve,
 						System.Func<VisualElement> func => func(),
@@ -45,18 +45,30 @@ namespace Grimoire.Inspector {
 			}
 			RegisterCallbackOnce<GeometryChangedEvent>(_ => {
 				foreach (var (j, cells) in rows.OrderBy(kvp => kvp.Key)) {
-					var height = cells.Max(ve => ve.resolvedStyle.height);
+					var height = cells.Max(ve => {
+						return ve[0].resolvedStyle.height + 3;
+					});
 					cells.ForEach(cell => {
 						cell.style.minHeight = height;
+						if (cell[0] is PropertyField pf) {
+							pf.RegisterCallback<GeometryChangedEvent, VisualElement>(OnCellGeometryChanged, cell);
+						}
 					});
 				}
 			});
 		}
 
 		private void OnCellGeometryChanged(GeometryChangedEvent ev, VisualElement cell) {
-			if (ev.target != cell) return;
-
-			Debug.Log(ev.target);
+			foreach (var (j, cells) in rows) {
+				if (cells.Contains(cell)) {
+					var height = cells.Max(ve => {
+						return cell[0].resolvedStyle.height + 3;
+					});
+					cells.ForEach(cell => {
+						cell.style.minHeight = height;
+					});
+				}
+			}
 		}
 
 		public static Dictionary<int, Dictionary<int, object>> Transpose(Dictionary<int, Dictionary<int, object>> from) {
