@@ -40,8 +40,8 @@ namespace Grimoire.Inspector {
 						if (fieldIterator.type == "LocalizedString") {
 							field.label = "Localized String";
 							field.style.marginLeft = new Length(-5f);
-							field.style.marginRight = new Length(5f);
-							field.style.minWidth = new Length(280);
+							field.style.marginRight = new Length(-1f);
+							field.style.minWidth = new Length(280f);
 						} else {
 							field.label = "";
 						}

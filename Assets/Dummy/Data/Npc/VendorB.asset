@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e28b091c0c7ce4b159545551cbdc5b27, type: 3}
   m_Name: VendorB
   m_EditorClassIdentifier: 
-  displayName: 
+  displayName: Catman

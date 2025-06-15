@@ -20,7 +20,7 @@ namespace Grimoire.Inspector {
 			if (colsData.Count <= 0) return;
 
 			var maxRowIndex = colsData.Max(kvp => kvp.Key);
-			var maxColIndex = colsData.Max(kvp => kvp.Value.Max(kvp => kvp.Key));
+			var maxColIndex = colsData.SelectMany(r => r.Value.Keys).Max();
 
 			for (int i = 0; i <= maxRowIndex; i++) {
 				var colContainer = new VisualElement();
@@ -34,6 +34,14 @@ namespace Grimoire.Inspector {
 					cellContainer.style.borderBottomColor = Color.gray;
 					cellContainer.style.borderRightWidth = 1f;
 					cellContainer.style.borderRightColor = Color.gray;
+					if (i == 0) {
+						cellContainer.style.borderLeftWidth = 1f;
+						cellContainer.style.borderLeftColor = Color.gray;
+					}
+					if (j == 0) {
+						cellContainer.style.borderTopWidth = 1f;
+						cellContainer.style.borderTopColor = Color.gray;
+					}
 					colContainer.Add(cellContainer);
 					if (!rows.TryGetValue(j, out var row)) {
 						row = new();
