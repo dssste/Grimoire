@@ -1,82 +1,93 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.EditorCoroutines.Editor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class TableView : VisualElement {
-	public Dictionary<int, Dictionary<int, object>> cols;
+namespace Grimoire.Inspector {
+	public class TableView : VisualElement {
+		public Dictionary<int, Dictionary<int, object>> colsData;
 
-	private Dictionary<int, List<VisualElement>> rowsCellContainer = new();
+		private Dictionary<int, List<VisualElement>> rows = new();
 
-	public TableView() {
-		style.flexDirection = FlexDirection.Row;
-	}
+		public TableView() {
+			style.flexDirection = FlexDirection.Row;
+		}
 
-	public void Rebuild() {
-		foreach (var (i, col) in cols.OrderBy(kvp => kvp.Key)) {
-			var colContainer = new VisualElement();
-			Add(colContainer);
-			foreach (var (j, cell) in col.OrderBy(kvp => kvp.Key)) {
-				var cellContainer = new VisualElement();
-				StyleCellContainer(cellContainer);
-				cellContainer.Add(cell switch {
-					string s => new Label(s),
-					VisualElement ve => ve,
-					System.Func<VisualElement> func => func(),
-					_ => new Label("empty cell"),
-				});
-				if (!rowsCellContainer.ContainsKey(j)) {
-					rowsCellContainer[j] = new();
+		public void Rebuild() {
+			Clear();
+			rows.Clear();
+			if (colsData.Count <= 0) return;
+
+			foreach (var (i, col) in colsData.OrderBy(kvp => kvp.Key)) {
+				var colContainer = new VisualElement();
+				Add(colContainer);
+				foreach (var (j, cell) in col.OrderBy(kvp => kvp.Key)) {
+					var cellContainer = new VisualElement();
+					cellContainer.style.borderBottomWidth = 1f;
+					cellContainer.style.borderBottomColor = Color.gray;
+					cellContainer.style.borderRightWidth = 1f;
+					cellContainer.style.borderRightColor = Color.gray;
+					cellContainer.style.justifyContent = Justify.Center;
+					cellContainer.Add(cell switch {
+						string s => new Label(s),
+						VisualElement ve => ve,
+						System.Func<VisualElement> func => func(),
+						_ => new Label("empty cell"),
+					});
+					if (!rows.TryGetValue(j, out var row)) {
+						row = new();
+						rows[j] = row;
+					}
+					rows[j].Add(cellContainer);
+					colContainer.Add(cellContainer);
 				}
-				rowsCellContainer[j].Add(cellContainer);
-				colContainer.Add(cellContainer);
 			}
-		}
-		RegisterCallbackOnce<GeometryChangedEvent>(ev => {
-			foreach (var (j, cc) in rowsCellContainer) {
-				var height = cc.Max(ve => ve.resolvedStyle.height);
-				cc.ForEach(ve => ve.style.height = height);
-			}
-		});
-	}
-
-	public static Dictionary<int, Dictionary<int, object>> Transpose(Dictionary<int, Dictionary<int, object>> from) {
-		var to = new Dictionary<int, Dictionary<int, object>>();
-		foreach (var (i, col) in from) {
-			foreach (var (j, cell) in col) {
-				if (!to.TryGetValue(j, out var row)) {
-					row = new();
-					to[j] = row;
+			RegisterCallbackOnce<GeometryChangedEvent>(_ => {
+				foreach (var (j, cells) in rows.OrderBy(kvp => kvp.Key)) {
+					var height = cells.Max(ve => ve.resolvedStyle.height);
+					cells.ForEach(cell => {
+						cell.style.minHeight = height;
+					});
 				}
-				row[i] = cell;
+			});
+		}
+
+		private void OnCellGeometryChanged(GeometryChangedEvent ev, VisualElement cell) {
+			if (ev.target != cell) return;
+
+			Debug.Log(ev.target);
+		}
+
+		public static Dictionary<int, Dictionary<int, object>> Transpose(Dictionary<int, Dictionary<int, object>> from) {
+			var to = new Dictionary<int, Dictionary<int, object>>();
+			foreach (var (i, col) in from) {
+				foreach (var (j, cell) in col) {
+					if (!to.TryGetValue(j, out var row)) {
+						row = new();
+						to[j] = row;
+					}
+					row[i] = cell;
+				}
+			}
+			return to;
+		}
+
+		private void InspectCols() {
+			var sb = new System.Text.StringBuilder();
+			foreach (var (i, col) in colsData.OrderBy(kvp => kvp.Key)) {
+				sb.Clear();
+				sb.Append(i + ": ");
+				foreach (var (j, cell) in col.OrderBy(kvp => kvp.Key)) {
+					sb.Append(j + " " + cell switch {
+						string s => s,
+						VisualElement ve => ve.GetType(),
+						System.Func<VisualElement> func => func().GetType(),
+						_ => new Label("empty cell"),
+					} + ", ");
+				}
+				Debug.Log(sb);
 			}
 		}
-		return to;
 	}
-
-	private static void StyleCellContainer(VisualElement ve) {
-		ve.style.borderBottomWidth = 1f;
-		ve.style.borderBottomColor = Color.gray;
-		ve.style.borderRightWidth = 1f;
-		ve.style.borderRightColor = Color.gray;
-		ve.style.justifyContent = Justify.Center;
-	}
-
-	private void InspectCols() {
-		var sb = new System.Text.StringBuilder();
-		foreach (var (i, col) in cols.OrderBy(kvp => kvp.Key)) {
-			sb.Clear();
-			sb.Append(i + ": ");
-			foreach (var (j, cell) in col.OrderBy(kvp => kvp.Key)) {
-				sb.Append(j + " " + cell switch {
-					string s => s,
-					VisualElement ve => ve.GetType(),
-					System.Func<VisualElement> func => func().GetType(),
-					_ => new Label("empty cell"),
-				} + ", ");
-			}
-			Debug.Log(sb);
-		}
-	}
-
 }
