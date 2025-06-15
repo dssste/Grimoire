@@ -6,6 +6,8 @@ using UnityEngine.UIElements;
 public class TableView : VisualElement {
 	public Dictionary<int, Dictionary<int, object>> cols;
 
+	private Dictionary<int, List<VisualElement>> rowsCellContainer = new();
+
 	public TableView() {
 		style.flexDirection = FlexDirection.Row;
 	}
@@ -16,19 +18,26 @@ public class TableView : VisualElement {
 			Add(colContainer);
 			foreach (var (j, cell) in col.OrderBy(kvp => kvp.Key)) {
 				var cellContainer = new VisualElement();
-				cellContainer.style.borderBottomWidth = 1f;
-				cellContainer.style.borderBottomColor = Color.gray;
-				cellContainer.style.borderRightWidth = 1f;
-				cellContainer.style.borderRightColor = Color.gray;
+				StyleCellContainer(cellContainer);
 				cellContainer.Add(cell switch {
 					string s => new Label(s),
 					VisualElement ve => ve,
 					System.Func<VisualElement> func => func(),
 					_ => new Label("empty cell"),
 				});
+				if (!rowsCellContainer.ContainsKey(j)) {
+					rowsCellContainer[j] = new();
+				}
+				rowsCellContainer[j].Add(cellContainer);
 				colContainer.Add(cellContainer);
 			}
 		}
+		RegisterCallbackOnce<GeometryChangedEvent>(ev => {
+			foreach (var (j, cc) in rowsCellContainer) {
+				var height = cc.Max(ve => ve.resolvedStyle.height);
+				cc.ForEach(ve => ve.style.height = height);
+			}
+		});
 	}
 
 	public static Dictionary<int, Dictionary<int, object>> Transpose(Dictionary<int, Dictionary<int, object>> from) {
@@ -43,6 +52,14 @@ public class TableView : VisualElement {
 			}
 		}
 		return to;
+	}
+
+	private static void StyleCellContainer(VisualElement ve) {
+		ve.style.borderBottomWidth = 1f;
+		ve.style.borderBottomColor = Color.gray;
+		ve.style.borderRightWidth = 1f;
+		ve.style.borderRightColor = Color.gray;
+		ve.style.justifyContent = Justify.Center;
 	}
 
 	private void InspectCols() {

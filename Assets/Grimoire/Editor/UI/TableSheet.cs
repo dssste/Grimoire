@@ -13,7 +13,7 @@ namespace Grimoire.Inspector {
 		public string[] assetIds { get; set; }
 
 		public void Rebuild() {
-			var resultContainer = this.Q<ScrollView>("result-container");
+			var resultContainer = this.Q<VisualElement>("result-container");
 			resultContainer.Clear();
 
 			var rows = new Dictionary<string, Dictionary<int, VisualElement>>();
@@ -40,6 +40,7 @@ namespace Grimoire.Inspector {
 						var field = new PropertyField();
 						field.BindProperty(fieldIterator);
 						rows[displayName][i] = field;
+						field.label = "";
 					}
 				}
 			}
@@ -62,39 +63,3 @@ namespace Grimoire.Inspector {
 		}
 	}
 }
-
-// var ve = new VisualElement();
-// ve.AddToClassList("result-column");
-// var so = new SerializedObject(asset);
-// var objectField = new ObjectField();
-// objectField.value = asset;
-// objectField.SetEnabled(false);
-// ve.Add(objectField);
-// var editor = Editor.CreateEditor(so.targetObject);
-// var inspector = editor.CreateInspectorGUI();
-// if (inspector == null) {
-// 	Debug.LogWarning($"{path} has no CreateInspectorGUI on it's inspector, and is not added to the table");
-// 	continue;
-// } else {
-// 	inspector.Bind(so);
-// 	var header = this.Q<VisualElement>("header");
-// 	inspector.RegisterCallbackOnce<GeometryChangedEvent>(ev => {
-// 		inspector.Query<Label>(className: "unity-property-field__label").Visible().ForEach(ve => {
-// 			ve.RemoveFromHierarchy();
-// 			if (!header.Children().Any(c => (c as Label).text == ve.text)) {
-// 				header.Add(ve);
-// 				ve.pickingMode = PickingMode.Ignore;
-// 			}
-// 		});
-// 	});
-// 	inspector.RegisterCallbackOnce<GeometryChangedEvent>(ev => {
-// 		inspector.Query<Label>(className: "unity-foldout__text").Visible().ForEach(ve => {
-// 			ve.RemoveFromHierarchy();
-// 			if (!header.Children().Any(c => (c as Label).text == ve.text)) {
-// 				header.Add(ve);
-// 				ve.pickingMode = PickingMode.Ignore;
-// 			}
-// 		});
-// 	});
-// }
-// ve.Add(inspector);

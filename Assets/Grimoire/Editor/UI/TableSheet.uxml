@@ -1,7 +1,6 @@
 <ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
 	<Style src="project://database/Assets/Grimoire/Editor/UI/TableSheet.uss?fileID=7433441132597879392&amp;guid=e5109ab14b19c4c438f383372efcdd89&amp;type=3#TableSheet"/>
 	<Grimoire.Inspector.TableSheet class="table-sheet">
-		<ui:VisualElement name="header" class="header"/>
-		<ui:ScrollView mode="Horizontal" name="result-container" class="result-container"/>
+		<ui:VisualElement name="result-container" class="result-container"/>
 	</Grimoire.Inspector.TableSheet>
 </ui:UXML>
