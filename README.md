@@ -1,4 +1,4 @@
-<img width="1200" alt="Image" src="https://github.com/user-attachments/assets/2a925912-cc01-4723-b60e-8155f6d04911" />
+<img width="800" alt="Image" src="https://github.com/user-attachments/assets/88dab944-9f1d-4999-9572-dab3771ac965" />
 
 **Grimoire (WIP)** is a Unity Editor extension for visualizing & editing your static data assets in a tabular way.
 
