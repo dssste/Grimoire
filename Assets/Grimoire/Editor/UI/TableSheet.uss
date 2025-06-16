@@ -35,11 +35,19 @@
 	border-color: var(--unity-colors-default-border);
 }
 
-.table-view .table-view__cell .unity-imgui-container{
+.table-view .table-view__cell-alternated_rows {
+	background-color: var(--unity-colors-alternated_rows-background);
+}
+
+.table-view .table-view__cell .unity-imgui-container {
 	margin-top: -1px;
 	margin-bottom: -6px;
 }
 
-.table-view .table-view__cell-alternated_rows {
-	background-color: var(--unity-colors-alternated_rows-background);
+.table-view .table-view__cell .asset-header {
+	opacity: 1;
+}
+
+.table-view .table-view__cell .asset-header .unity-object-field__selector {
+	display: none;
 }

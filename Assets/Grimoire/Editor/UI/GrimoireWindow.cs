@@ -119,7 +119,7 @@ namespace Grimoire.Inspector {
 				.OrderBy(e => e)
 				.Select(e => e.ToString())
 				.ToList();
-			typeDropdown.value = tabData.sheetType.ToString();
+			typeDropdown.SetValueWithoutNotify(tabData.sheetType.ToString());
 			typeDropdown.RegisterCallback<ChangeEvent<string>>(ev => {
 				tabData.sheetType = Enum.Parse<ISheet.Type>(ev.newValue);
 				var session = ProjectSettings.grimoireSession;

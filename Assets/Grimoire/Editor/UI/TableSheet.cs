@@ -9,6 +9,7 @@ namespace Grimoire.Inspector {
 	[UxmlElement]
 	public partial class TableSheet : VisualElement, ISheet {
 		public static string uxml_path = "Editor/UI/TableSheet.uxml";
+		public static string assetHeaderUssClassName = "asset-header";
 
 		public string[] assetIds { get; set; }
 
@@ -25,6 +26,7 @@ namespace Grimoire.Inspector {
 					var objectField = new ObjectField();
 					objectField.value = asset;
 					objectField.SetEnabled(false);
+					objectField.AddToClassList(assetHeaderUssClassName);
 
 					if (!rows.ContainsKey("Asset")) {
 						rows["Asset"] = new();
