@@ -1,6 +1,6 @@
 {
 	"name": "com.dss.grimoire",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"displayName": "Grimoire",
 	"description": "Spreadsheet-like display & edit for your static data assets",
 	"unity": "2022.3",
