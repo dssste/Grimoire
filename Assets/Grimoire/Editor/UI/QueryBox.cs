@@ -1,10 +1,14 @@
-using UnityEngine;
+using UnityEditor;
 using UnityEngine.UIElements;
 
 namespace Grimoire.Inspector {
 	[UxmlElement]
 	public partial class QueryBox : VisualElement {
-		public static string uxml_path = "Editor/UI/QueryBox.uxml";
+		private static string uxml_path = "Editor/UI/QueryBox.uxml";
+
+		public QueryBox() {
+			Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(GrimoireWindow.start_path + uxml_path).Instantiate());
+		}
 
 		public static string nameFieldUssClassName = "name-field";
 		public static string queryFieldUssClassName = "query-field";

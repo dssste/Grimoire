@@ -112,7 +112,7 @@ namespace Grimoire.Inspector {
 			var tabData = tab.userData as TabData;
 			var window = CreateInstance<EditorWindow>();
 			window.ShowAsDropDown(rect, new Vector2(240f, 98f));
-			window.rootVisualElement.Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(start_path + QueryBox.uxml_path).Instantiate());
+			window.rootVisualElement.Add(new QueryBox());
 
 			var typeDropdown = window.rootVisualElement.Q<DropdownField>(className: QueryBox.sheetTypeDropdownUssClassName);
 			typeDropdown.choices = ((ISheet.Type[])Enum.GetValues(typeof(ISheet.Type)))

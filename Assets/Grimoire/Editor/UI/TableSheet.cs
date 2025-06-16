@@ -8,11 +8,12 @@ using UnityEngine.UIElements;
 namespace Grimoire.Inspector {
 	[UxmlElement]
 	public partial class TableSheet : VisualElement, ISheet {
-		public static string uxml_path = "Editor/UI/TableSheet.uxml";
 		public static string assetHeaderUssClassName = "asset-header";
 
+		private static string uxml_path = "Editor/UI/TableSheet.uxml";
+
 		public TableSheet() {
-			Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(GrimoireWindow.start_path + TableSheet.uxml_path).Instantiate());
+			Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(GrimoireWindow.start_path + uxml_path).Instantiate());
 		}
 
 		public string[] assetIds { get; set; }

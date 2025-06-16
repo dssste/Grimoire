@@ -6,10 +6,10 @@ using UnityEngine.UIElements;
 namespace Grimoire.Inspector {
 	[UxmlElement]
 	public partial class ColumnSheet : VisualElement, ISheet {
-		public static string uxml_path = "Editor/UI/ColumnSheet.uxml";
+		private static string uxml_path = "Editor/UI/ColumnSheet.uxml";
 
 		public ColumnSheet() {
-			Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(GrimoireWindow.start_path + ColumnSheet.uxml_path).Instantiate());
+			Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(GrimoireWindow.start_path + uxml_path).Instantiate());
 		}
 
 		public string[] assetIds { get; set; }
