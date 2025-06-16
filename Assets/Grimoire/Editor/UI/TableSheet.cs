@@ -31,17 +31,22 @@ namespace Grimoire.Inspector {
 					}
 					rows["Asset"][i] = objectField;
 
-					var fieldIterator = new SerializedObject(asset).GetIterator();
+					var so = new SerializedObject(asset);
+					var fieldIterator = so.GetIterator();
 					fieldIterator.NextVisible(true);
 					while (fieldIterator.NextVisible(false)) {
 						var displayName = fieldIterator.displayName;
-						var field = new PropertyField();
-						field.BindProperty(fieldIterator);
+						var field = new PropertyField(fieldIterator);
+						field.Bind(so);
 						if (fieldIterator.type == "LocalizedString") {
 							field.label = "Localized String";
 							field.style.marginLeft = new Length(-5f);
 							field.style.marginRight = new Length(-1f);
 							field.style.minWidth = new Length(280f);
+						} else if (fieldIterator.isArray) {
+							field.style.marginRight = new Length(3f);
+							field.style.minWidth = new Length(62f);
+							field.label = "List";
 						} else {
 							field.label = "";
 						}

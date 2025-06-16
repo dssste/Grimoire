@@ -33,13 +33,13 @@ namespace Grimoire.Dummy {
 		// public AnimationClip[] attackAnimations;
 
 		[System.Serializable]
-		public class Drop {
+		public class DroptableEntry {
 			public Item item;
 			public int minAmount;
 			public int maxAmount;
 			public float dropChance;
 		}
-		public List<Drop> drops;
+		public List<DroptableEntry> droptable;
 
 		public Monster evolution;
 	}
