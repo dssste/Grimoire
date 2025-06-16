@@ -1,11 +1,39 @@
-/* :root { */
-/* 	flex-grow: 1; */
-/* } */
-/**/
-/* .table-sheet { */
-/* 	flex-grow: 1; */
-/* } */
-/**/
-/* .result-container { */
-/* 	flex-grow: 1; */
-/* } */
+:root {
+	flex-grow: 1;
+}
+
+.table-sheet {
+	flex-grow: 1;
+}
+
+.result-container {
+	flex-grow: 1;
+}
+
+.unity-base-slider {
+	margin: 0;
+}
+
+.unity-scroller__low-button {
+	display: none;
+}
+
+.unity-scroller__high-button {
+	display: none;
+}
+
+.unity-base-slider__tracker {
+	display: none;
+}
+
+.unity-base-slider__dragger-border {
+	display: none;
+}
+
+.table-view .table-view__cell {
+	border-color: var(--unity-colors-default-border);
+}
+
+.table-view .table-view__cell-alternated_rows {
+	background-color: var(--unity-colors-alternated_rows-background);
+}

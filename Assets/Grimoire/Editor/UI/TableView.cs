@@ -6,12 +6,17 @@ using UnityEngine.UIElements;
 
 namespace Grimoire.Inspector {
 	public class TableView : VisualElement {
+		public static string ussClassName = "table-view";
+		public static string cellUssClassName = ussClassName + "__cell";
+		public static string cellAlternatedRowsUssClassName = cellUssClassName + "-alternated_rows";
+
 		public Dictionary<int, Dictionary<int, object>> colsSource;
 
 		private Dictionary<int, List<VisualElement>> rows = new();
 
 		public TableView() {
 			style.flexDirection = FlexDirection.Row;
+			AddToClassList(ussClassName);
 		}
 
 		public void Rebuild() {
@@ -30,17 +35,17 @@ namespace Grimoire.Inspector {
 
 				for (int j = 0; j <= maxColIndex; j++) {
 					var cellContainer = new VisualElement();
-					cellContainer.style.borderBottomWidth = 1f;
-					cellContainer.style.borderBottomColor = Color.gray;
+					cellContainer.AddToClassList(cellUssClassName);
 					cellContainer.style.borderRightWidth = 1f;
-					cellContainer.style.borderRightColor = Color.gray;
+					cellContainer.style.borderBottomWidth = 1f;
 					if (i == 0) {
 						cellContainer.style.borderLeftWidth = 1f;
-						cellContainer.style.borderLeftColor = Color.gray;
 					}
 					if (j == 0) {
 						cellContainer.style.borderTopWidth = 1f;
-						cellContainer.style.borderTopColor = Color.gray;
+					}
+					if (j % 2 == 0) {
+						cellContainer.AddToClassList(cellAlternatedRowsUssClassName);
 					}
 					colContainer.Add(cellContainer);
 					if (!rows.TryGetValue(j, out var row)) {
