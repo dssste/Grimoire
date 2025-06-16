@@ -11,6 +11,10 @@ namespace Grimoire.Inspector {
 		public static string uxml_path = "Editor/UI/TableSheet.uxml";
 		public static string assetHeaderUssClassName = "asset-header";
 
+		public TableSheet() {
+			Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(GrimoireWindow.start_path + TableSheet.uxml_path).Instantiate());
+		}
+
 		public string[] assetIds { get; set; }
 
 		public void Rebuild() {
