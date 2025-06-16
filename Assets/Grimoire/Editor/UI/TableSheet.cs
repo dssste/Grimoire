@@ -43,10 +43,13 @@ namespace Grimoire.Inspector {
 							field.style.marginLeft = new Length(-5f);
 							field.style.marginRight = new Length(-1f);
 							field.style.minWidth = new Length(280f);
-						} else if (fieldIterator.isArray) {
+						} else if (fieldIterator.isArray && fieldIterator.type != "string") {
 							field.style.marginRight = new Length(3f);
 							field.style.minWidth = new Length(62f);
 							field.label = "List";
+						} else if (fieldIterator.type == "bool") {
+							field.style.alignItems = Align.Center;
+							field.label = "";
 						} else {
 							field.label = "";
 						}

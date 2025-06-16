@@ -31,7 +31,11 @@ MonoBehaviour:
   mainColor: {r: 0.7735849, g: 0.7735849, b: 0.7735849, a: 0}
   isBoss: 0
   canFly: 0
-  drops: []
+  droptable:
+  - item: {fileID: 11400000, guid: fc93de4fa44f5464a8169ac7eed42ab4, type: 2}
+    minAmount: 2
+    maxAmount: 1
+    dropChance: 0.62
   evolution: {fileID: 0}
   references:
     version: 2

@@ -120,6 +120,16 @@ namespace Grimoire.Inspector {
 				.Select(e => e.ToString())
 				.ToList();
 			typeDropdown.value = tabData.sheetType.ToString();
+			typeDropdown.RegisterCallback<ChangeEvent<string>>(ev => {
+				tabData.sheetType = Enum.Parse<ISheet.Type>(ev.newValue);
+				var session = ProjectSettings.grimoireSession;
+				if (session == null) {
+					ShowNotification(new GUIContent("no persistant data selected, go to Project Settings/Grimoire to pick a persistant data asset"));
+				} else {
+					session.UpdateOrAdd(tab.userData as TabData);
+				}
+				RefreshTab(tab);
+			});
 
 			var nameField = window.rootVisualElement.Q<TextField>(className: QueryBox.nameFieldUssClassName);
 			nameField.value = tabData.name;
@@ -133,7 +143,6 @@ namespace Grimoire.Inspector {
 
 			window.rootVisualElement.Q<Button>(className: QueryBox.refreshButtonUssClassName).RegisterCallback<ClickEvent>(ev => {
 				tabData.query = queryField.value;
-				tabData.sheetType = Enum.Parse<ISheet.Type>(typeDropdown.value);
 				var session = ProjectSettings.grimoireSession;
 				if (session == null) {
 					ShowNotification(new GUIContent("no persistant data selected, go to Project Settings/Grimoire to pick a persistant data asset"));
