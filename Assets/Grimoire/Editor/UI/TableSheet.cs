@@ -56,7 +56,7 @@ namespace Grimoire.Inspector {
 
 			var tableView = new TableView();
 			// tableView.colsData = TableView.Transpose(ToTableRows(rows));
-			tableView.colsData = ToTableRows(rows);
+			tableView.colsSource = ToTableRows(rows);
 			tableView.Rebuild();
 			resultContainer.Add(tableView);
 		}

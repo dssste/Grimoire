@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 namespace Grimoire.Inspector {
 	public class TableView : VisualElement {
-		public Dictionary<int, Dictionary<int, object>> colsData;
+		public Dictionary<int, Dictionary<int, object>> colsSource;
 
 		private Dictionary<int, List<VisualElement>> rows = new();
 
@@ -17,16 +17,16 @@ namespace Grimoire.Inspector {
 		public void Rebuild() {
 			Clear();
 			rows.Clear();
-			if (colsData.Count <= 0) return;
+			if (colsSource.Count <= 0) return;
 
-			var maxRowIndex = colsData.Max(kvp => kvp.Key);
-			var maxColIndex = colsData.SelectMany(r => r.Value.Keys).Max();
+			var maxRowIndex = colsSource.Max(kvp => kvp.Key);
+			var maxColIndex = colsSource.SelectMany(r => r.Value.Keys).Max();
 
 			for (int i = 0; i <= maxRowIndex; i++) {
 				var colContainer = new VisualElement();
 				Add(colContainer);
 
-				if (!colsData.TryGetValue(i, out var col)) continue;
+				if (!colsSource.TryGetValue(i, out var col)) continue;
 
 				for (int j = 0; j <= maxColIndex; j++) {
 					var cellContainer = new VisualElement();
@@ -50,22 +50,22 @@ namespace Grimoire.Inspector {
 					rows[j].Add(cellContainer);
 
 					col.TryGetValue(j, out var cellData);
+
 					cellContainer.Add(cellData switch {
 						string s => new Label(s),
 						VisualElement ve => ve,
 						System.Func<VisualElement> func => func(),
-						_ => new VisualElement(),
+						null => null,
+						_ => new Label("?"),
 					});
 				}
 			}
 			RegisterCallbackOnce<GeometryChangedEvent>(_ => {
-				foreach (var (j, cells) in rows) {
-					var height = cells.Max(ve => {
-						return ve[0].resolvedStyle.height + 3;
-					});
-					cells.ForEach(cell => {
-						cell.style.minHeight = height;
-						if (cell[0] is PropertyField pf) {
+				foreach (var (j, row) in rows) {
+					Align(row);
+					row.ForEach(cell => {
+						var pf = cell.Q<PropertyField>();
+						if (pf != null) {
 							pf.RegisterCallback<GeometryChangedEvent, VisualElement>(OnCellGeometryChanged, cell);
 						}
 					});
@@ -74,16 +74,26 @@ namespace Grimoire.Inspector {
 		}
 
 		private void OnCellGeometryChanged(GeometryChangedEvent ev, VisualElement cell) {
-			foreach (var (j, cells) in rows) {
-				if (cells.Contains(cell)) {
-					var height = cells.Max(ve => {
-						return cell[0].resolvedStyle.height + 3;
-					});
-					cells.ForEach(cell => {
-						cell.style.minHeight = height;
-					});
+			foreach (var (j, row) in rows) {
+				if (row.Contains(cell)) {
+					Align(row);
+					return;
 				}
 			}
+		}
+
+		private static void Align(List<VisualElement> row) {
+			var height = row.Max(ve => {
+				var firstChild = ve.Query().Visible().Build().Skip(1).FirstOrDefault();
+				if (firstChild == null) {
+					return 0;
+				} else {
+					return firstChild.resolvedStyle.height + 3;
+				}
+			});
+			row.ForEach(cell => {
+				cell.style.minHeight = height;
+			});
 		}
 
 		public static Dictionary<int, Dictionary<int, object>> Transpose(Dictionary<int, Dictionary<int, object>> from) {
@@ -102,7 +112,7 @@ namespace Grimoire.Inspector {
 
 		private void InspectCols() {
 			var sb = new System.Text.StringBuilder();
-			foreach (var (i, col) in colsData.OrderBy(kvp => kvp.Key)) {
+			foreach (var (i, col) in colsSource.OrderBy(kvp => kvp.Key)) {
 				sb.Clear();
 				sb.Append(i + ": ");
 				foreach (var (j, cell) in col.OrderBy(kvp => kvp.Key)) {
