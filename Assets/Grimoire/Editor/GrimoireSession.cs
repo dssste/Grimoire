@@ -12,7 +12,7 @@ namespace Grimoire.Inspector {
 	public class TabData {
 		public string name;
 		public string query;
-		public ISheet.Type sheetType;
+		public string sheetKey;
 	}
 
 	public class GrimoireSession : ScriptableObject {

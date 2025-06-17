@@ -57,7 +57,7 @@ namespace Grimoire.Inspector {
 			newTabButton.RegisterCallback<ClickEvent>(ev => {
 				var tabData = new TabData() {
 					name = "new tab",
-					sheetType = ISheet.Type.inspector_columns
+					sheetKey = typeof(ColumnSheet).FullName,
 				};
 				var (tab, header) = AddTab(tabData);
 				tab.RegisterCallbackOnce<GeometryChangedEvent>(ev => {
@@ -98,9 +98,9 @@ namespace Grimoire.Inspector {
 				tab.Clear();
 			} else {
 				var sheet = tab.GetSheet();
-				if (sheet == null || sheet.GetSheetType() != tabData.sheetType) {
+				if (sheet == null || sheet.GetKey() != tabData.sheetKey) {
 					tab.Clear();
-					tab.Add(tabData.sheetType.GetVisaulElement());
+					tab.Add(tabData.sheetKey.GetVisaulElement());
 					sheet = tab.GetSheet();
 				}
 				sheet.assetIds = AssetDatabase.FindAssets(tabData.query);
@@ -115,13 +115,11 @@ namespace Grimoire.Inspector {
 			window.rootVisualElement.Add(new QueryBox());
 
 			var typeDropdown = window.rootVisualElement.Q<DropdownField>(className: QueryBox.sheetTypeDropdownUssClassName);
-			typeDropdown.choices = ((ISheet.Type[])Enum.GetValues(typeof(ISheet.Type)))
-				.OrderBy(e => e)
-				.Select(e => e.ToString())
-				.ToList();
-			typeDropdown.SetValueWithoutNotify(tabData.sheetType.ToString());
+			SheetExtensions.GetSheets();
+			typeDropdown.choices = SheetExtensions.GetSheets();
+			typeDropdown.SetValueWithoutNotify(string.IsNullOrEmpty(tabData.sheetKey) ? typeDropdown.choices[0] : tabData.sheetKey);
 			typeDropdown.RegisterCallback<ChangeEvent<string>>(ev => {
-				tabData.sheetType = Enum.Parse<ISheet.Type>(ev.newValue);
+				tabData.sheetKey = ev.newValue;
 				var session = ProjectSettings.grimoireSession;
 				if (session == null) {
 					ShowNotification(new GUIContent("no persistant data selected, go to Project Settings/Grimoire to pick a persistant data asset"));
