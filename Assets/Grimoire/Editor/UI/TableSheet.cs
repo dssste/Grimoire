@@ -30,7 +30,10 @@ namespace Grimoire.Inspector {
 				if (asset != null) {
 					var objectField = new ObjectField();
 					objectField.value = asset;
-					objectField.SetEnabled(false);
+					objectField.RegisterCallback<DragUpdatedEvent>(ev => ev.StopPropagation(), TrickleDown.TrickleDown);
+					objectField.RegisterCallback<DragPerformEvent>(ev => ev.StopPropagation(), TrickleDown.TrickleDown);
+					objectField.RegisterCallback<DragLeaveEvent>(ev => ev.StopPropagation(), TrickleDown.TrickleDown);
+					objectField.RegisterCallback<KeyDownEvent>(ev => ev.StopPropagation(), TrickleDown.TrickleDown);
 					objectField.AddToClassList(assetHeaderUssClassName);
 
 					if (!rows.ContainsKey("Asset")) {

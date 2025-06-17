@@ -44,10 +44,6 @@
 	margin-bottom: -6px;
 }
 
-.table-view .table-view__cell .asset-header {
-	opacity: 1;
-}
-
 .table-view .table-view__cell .asset-header .unity-object-field__selector {
 	display: none;
 }
