@@ -9,6 +9,9 @@ namespace Grimoire.Inspector {
 		public static string ussClassName = "table-view";
 		public static string cellUssClassName = ussClassName + "__cell";
 		public static string cellAlternatedRowsUssClassName = cellUssClassName + "-alternated_rows";
+		public static string textDataUssClassName = "text-data";
+		public static string columnHeaderCellUssClassName = cellUssClassName + "-column-header";
+		public static string rowHeaderCellUssClassName = cellUssClassName + "-row-header";
 
 		public Dictionary<int, Dictionary<int, object>> colsSource;
 
@@ -36,6 +39,12 @@ namespace Grimoire.Inspector {
 				for (int j = 0; j <= maxColIndex; j++) {
 					var cellContainer = new VisualElement();
 					cellContainer.AddToClassList(cellUssClassName);
+					if (i == 0) {
+						cellContainer.AddToClassList(columnHeaderCellUssClassName);
+					}
+					if (j == 0) {
+						cellContainer.AddToClassList(rowHeaderCellUssClassName);
+					}
 					cellContainer.style.borderRightWidth = 1f;
 					cellContainer.style.borderBottomWidth = 1f;
 					if (i == 0) {
@@ -57,11 +66,11 @@ namespace Grimoire.Inspector {
 					col.TryGetValue(j, out var cellData);
 
 					cellContainer.Add(cellData switch {
-						string s => new Label(s),
+						string s => CreateTextData(s),
 						VisualElement ve => ve,
 						System.Func<VisualElement> func => func(),
 						null => null,
-						_ => new Label("?"),
+						_ => CreateTextData("?"),
 					});
 				}
 			}
@@ -85,6 +94,12 @@ namespace Grimoire.Inspector {
 					return;
 				}
 			}
+		}
+
+		private static Label CreateTextData(string s) {
+			var label = new Label(s);
+			label.AddToClassList(textDataUssClassName);
+			return label;
 		}
 
 		private static void Align(List<VisualElement> row) {

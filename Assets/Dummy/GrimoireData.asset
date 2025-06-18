@@ -18,8 +18,8 @@ MonoBehaviour:
     sheetKey: Table Transposed
   - name: monsters
     query: 't: Monster'
-    sheetKey: 
+    sheetKey: Table Transposed
   - name: new tab
     query: Skeleton
     sheetKey: Inspector Column
-  _selectedTabIndex: 0
+  _selectedTabIndex: 1

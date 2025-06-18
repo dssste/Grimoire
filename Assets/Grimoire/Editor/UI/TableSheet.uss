@@ -30,6 +30,18 @@
 	display: none;
 }
 
+.table-view .text-data {
+	margin: 1px 2px 1px 4px;
+}
+
+.table-view .table-view__cell-column-header {
+	-unity-font-style: bold;
+}
+
+.table-view .table-view__cell-row-header {
+	-unity-font-style: bold;
+}
+
 .table-view .table-view__cell {
 	margin-top: 1px;
 	border-color: var(--unity-colors-default-border);
@@ -46,4 +58,13 @@
 
 .table-view .table-view__cell .asset-header .unity-object-field__selector {
 	display: none;
+}
+
+.table-view .table-view__cell .asset-header .unity-object-field__input {
+	background-color: transparent;
+	border-color: transparent;
+}
+
+.table-view .table-view__cell .asset-header .unity-object-field__object:focus .unity-label {
+	color: var(--unity-colors-label-text-focus);
 }
