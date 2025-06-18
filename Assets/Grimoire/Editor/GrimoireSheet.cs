@@ -15,8 +15,6 @@ namespace Grimoire.Inspector {
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 	public class RegisterGrimoireSheetAttribute : Attribute {
 		public string key;
-		private string _displayName;
-		public string displayName => string.IsNullOrEmpty(_displayName) ? key : _displayName;
 	}
 
 	public static class SheetExtensions {
@@ -24,10 +22,9 @@ namespace Grimoire.Inspector {
 			public class Entry {
 				public Type type;
 				public RegisterGrimoireSheetAttribute attr;
-				public string key;
 			}
 
-			public static readonly Dictionary<string, Entry> entries;
+			public static readonly List<Entry> entries;
 
 			static GrimoireSheetRegistry() {
 				entries = new();
@@ -47,15 +44,13 @@ namespace Grimoire.Inspector {
 							attr.key = type.FullName;
 						}
 						var key = attr.key;
-						if (entries.ContainsKey(key)) {
-							Debug.LogWarning($"[RegisterGrimoireSheet] Duplicate sheet '{key}' found on type '{type.FullName}'.");
+						if (entries.Exists(e => e.attr.key == key)) {
+							Debug.LogWarning($"[RegisterGrimoireSheet] Duplicate sheet '{key}' on type '{type.FullName}'.");
 						}
-						entries[key] = new() {
+						entries.Add(new() {
 							type = type,
 							attr = attr,
-							key = key
-						}
-						;
+						});
 					}
 				}
 			}
@@ -73,17 +68,18 @@ namespace Grimoire.Inspector {
 		}
 
 		public static VisualElement GetVisaulElement(this string key) {
-			if (GrimoireSheetRegistry.entries.TryGetValue(key, out var entry)) {
-				var ve = Activator.CreateInstance(entry.type) as VisualElement;
-				SetKey(ve as IGrimoireSheet, entry.key);
-				return ve;
-			} else {
+			var entry = GrimoireSheetRegistry.entries.FirstOrDefault(e => e.attr.key == key);
+			if (entry == null) {
 				return new ColumnSheet();
+			} else {
+				var ve = Activator.CreateInstance(entry.type) as VisualElement;
+				SetKey(ve as IGrimoireSheet, entry.attr.key);
+				return ve;
 			}
 		}
 
 		public static List<string> GetSheets() {
-			return GrimoireSheetRegistry.entries.Keys.ToList();
+			return GrimoireSheetRegistry.entries.Select(e => e.attr.key).ToList();
 		}
 
 		private static void SetKey(IGrimoireSheet ve, string key) {

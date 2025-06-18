@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Grimoire.Inspector {
-	[UxmlElement, RegisterGrimoireSheet]
+	[UxmlElement, RegisterGrimoireSheet(key = "Inspector Column")]
 	public partial class ColumnSheet : VisualElement, IGrimoireSheet {
 		private static string uxml_path = "Editor/UI/ColumnSheet.uxml";
 

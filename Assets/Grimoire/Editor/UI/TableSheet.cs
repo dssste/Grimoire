@@ -7,8 +7,8 @@ using UnityEngine.UIElements;
 
 namespace Grimoire.Inspector {
 	[UxmlElement]
-	[RegisterGrimoireSheet]
-	[RegisterGrimoireSheet(key = "Grimoire.Inspector.TableSheet Transposed")]
+	[RegisterGrimoireSheet(key = "Table")]
+	[RegisterGrimoireSheet(key = "Table Transposed")]
 	public partial class TableSheet : VisualElement, IGrimoireSheet {
 		public static string assetHeaderUssClassName = "asset-header";
 

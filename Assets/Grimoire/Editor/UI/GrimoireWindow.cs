@@ -115,7 +115,6 @@ namespace Grimoire.Inspector {
 			window.rootVisualElement.Add(new QueryBox());
 
 			var typeDropdown = window.rootVisualElement.Q<DropdownField>(className: QueryBox.sheetTypeDropdownUssClassName);
-			SheetExtensions.GetSheets();
 			typeDropdown.choices = SheetExtensions.GetSheets();
 			typeDropdown.SetValueWithoutNotify(string.IsNullOrEmpty(tabData.sheetKey) ? typeDropdown.choices[0] : tabData.sheetKey);
 			typeDropdown.RegisterCallback<ChangeEvent<string>>(ev => {

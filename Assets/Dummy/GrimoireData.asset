@@ -15,7 +15,7 @@ MonoBehaviour:
   tabs:
   - name: all
     query: t:Monster t:Npc t:Item
-    sheetKey: Grimoire.Inspector.TableSheet
+    sheetKey: Table
   - name: monsters
     query: 't: Monster'
     sheetKey: 
