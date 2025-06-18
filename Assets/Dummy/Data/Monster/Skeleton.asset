@@ -24,7 +24,7 @@ MonoBehaviour:
   exp: 24
   type: 0
   icon: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 2345388859586200284, guid: ea226f8c7e7f4465ea5a4db43544b419, type: 3}
   health: 12
   speed: 8
   spawnPosition: {x: 0, y: 2.01, z: 1.26}

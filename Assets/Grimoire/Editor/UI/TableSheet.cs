@@ -44,19 +44,36 @@ namespace Grimoire.Inspector {
 					objectField.RegisterCallback<DragPerformEvent>(ev => ev.StopPropagation(), TrickleDown.TrickleDown);
 					objectField.RegisterCallback<DragLeaveEvent>(ev => ev.StopPropagation(), TrickleDown.TrickleDown);
 					objectField.RegisterCallback<KeyDownEvent>(ev => ev.StopPropagation(), TrickleDown.TrickleDown);
+					if (asset is ScriptableObject) {
+						var objectDisplayLabel = objectField.Q<TextElement>(className: "unity-object-field-display__label");
+						objectDisplayLabel.RegisterCallback<ChangeEvent<string>>(ev => {
+							ev.StopPropagation();
+							var value = ev.newValue;
+							int lastOpen = value.LastIndexOf(" (");
+							int lastClose = value.IndexOf(")", lastOpen);
+							if (lastOpen != -1 && lastClose != -1) {
+								value = value.Remove(lastOpen, lastClose - lastOpen + 1);
+							}
+							((INotifyValueChanged<string>)objectDisplayLabel).SetValueWithoutNotify(value);
+						}, TrickleDown.TrickleDown);
+						((INotifyValueChanged<string>)objectDisplayLabel).SetValueWithoutNotify(asset.name);
+					}
 					objectField.AddToClassList(assetHeaderUssClassName);
 					if (!rows.ContainsKey("Asset")) {
 						rows["Asset"] = new();
 					}
 					rows["Asset"][i] = objectField;
 
-					var scriptField = new PropertyField(so.FindProperty("m_Script"), "");
-					scriptField.Bind(so);
-					scriptField.SetEnabled(false);
-					if (!rows.ContainsKey("Script")) {
-						rows["Script"] = new();
+					var scriptProperty = so.FindProperty("m_Script");
+					if (scriptProperty != null) {
+						var scriptField = new PropertyField(scriptProperty, "");
+						scriptField.Bind(so);
+						scriptField.SetEnabled(false);
+						if (!rows.ContainsKey("Script")) {
+							rows["Script"] = new();
+						}
+						rows["Script"][i] = scriptField;
 					}
-					rows["Script"][i] = scriptField;
 
 					var fieldIterator = so.GetIterator();
 					fieldIterator.NextVisible(true);
