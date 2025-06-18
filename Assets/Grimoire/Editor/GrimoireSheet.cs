@@ -15,6 +15,7 @@ namespace Grimoire.Inspector {
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
 	public class RegisterGrimoireSheetAttribute : Attribute {
 		public string key;
+		public string initHook;
 	}
 
 	public static class SheetExtensions {
@@ -67,13 +68,21 @@ namespace Grimoire.Inspector {
 			return null;
 		}
 
-		public static VisualElement GetVisaulElement(this string key) {
+		public static VisualElement CreateInstance(this string key) {
 			var entry = GrimoireSheetRegistry.entries.FirstOrDefault(e => e.attr.key == key);
 			if (entry == null) {
 				return new ColumnSheet();
 			} else {
 				var ve = Activator.CreateInstance(entry.type) as VisualElement;
 				SetKey(ve as IGrimoireSheet, entry.attr.key);
+				if (!string.IsNullOrEmpty(entry.attr.initHook)) {
+					var method = entry.type.GetMethod(entry.attr.initHook, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+					if (method != null && method.GetParameters().Length == 0) {
+						method.Invoke(ve, null);
+					} else {
+						Debug.LogError($"Parameterless '{entry.attr.initHook}' not found on type '{entry.type.FullName}'.");
+					}
+				}
 				return ve;
 			}
 		}

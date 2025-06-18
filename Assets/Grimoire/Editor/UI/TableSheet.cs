@@ -7,18 +7,24 @@ using UnityEngine.UIElements;
 
 namespace Grimoire.Inspector {
 	[UxmlElement]
-	[RegisterGrimoireSheet(key = "Table")]
+	[RegisterGrimoireSheet(key = "Table", initHook = nameof(InitNonTransposed))]
 	[RegisterGrimoireSheet(key = "Table Transposed")]
 	public partial class TableSheet : VisualElement, IGrimoireSheet {
 		public static string assetHeaderUssClassName = "asset-header";
 
 		private static string uxml_path = "Editor/UI/TableSheet.uxml";
 
+		public string[] assetIds { get; set; }
+
+		private bool isNonTransposed;
+
 		public TableSheet() {
 			Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(GrimoireWindow.start_path + uxml_path).Instantiate());
 		}
 
-		public string[] assetIds { get; set; }
+		private void InitNonTransposed() {
+			isNonTransposed = true;
+		}
 
 		public void Rebuild() {
 			var resultContainer = this.Q<VisualElement>("result-container");
@@ -75,8 +81,11 @@ namespace Grimoire.Inspector {
 			}
 
 			var tableView = new TableView();
-			// tableView.colsData = TableView.Transpose(ToTableRows(rows));
-			tableView.colsSource = ToTableRows(rows);
+			if (isNonTransposed) {
+				tableView.colsSource = TableView.Transpose(ToTableRows(rows));
+			} else {
+				tableView.colsSource = ToTableRows(rows);
+			}
 			tableView.Rebuild();
 			resultContainer.Add(tableView);
 		}

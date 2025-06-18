@@ -100,7 +100,7 @@ namespace Grimoire.Inspector {
 				var sheet = tab.GetSheet();
 				if (sheet == null || sheet.GetKey() != tabData.sheetKey) {
 					tab.Clear();
-					tab.Add(tabData.sheetKey.GetVisaulElement());
+					tab.Add(tabData.sheetKey.CreateInstance());
 					sheet = tab.GetSheet();
 				}
 				sheet.assetIds = AssetDatabase.FindAssets(tabData.query);
