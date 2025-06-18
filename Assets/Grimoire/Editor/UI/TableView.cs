@@ -108,7 +108,7 @@ namespace Grimoire.Inspector {
 				if (firstChild == null) {
 					return 0;
 				} else {
-					return firstChild.resolvedStyle.height + 3;
+					return firstChild.resolvedStyle.height + firstChild.resolvedStyle.paddingTop + firstChild.resolvedStyle.paddingBottom + firstChild.resolvedStyle.marginTop + firstChild.resolvedStyle.marginBottom + 3;
 				}
 			});
 			row.ForEach(cell => {

@@ -43,7 +43,7 @@
 }
 
 .table-view .table-view__cell {
-	margin-top: 1px;
+	padding-top: 1px;
 	border-color: var(--unity-colors-default-border);
 }
 
@@ -53,7 +53,7 @@
 
 .table-view .table-view__cell .unity-imgui-container {
 	margin-top: -1px;
-	margin-bottom: -6px;
+	margin-bottom: -3px;
 }
 
 .table-view .table-view__cell .asset-header .unity-object-field__selector {
