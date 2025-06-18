@@ -15,7 +15,7 @@ MonoBehaviour:
   tabs:
   - name: all
     query: t:Monster t:Npc t:Item
-    sheetKey: Table
+    sheetKey: Table Transposed
   - name: monsters
     query: 't: Monster'
     sheetKey: 

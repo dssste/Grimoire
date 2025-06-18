@@ -36,6 +36,8 @@ namespace Grimoire.Inspector {
 				var path = AssetDatabase.GUIDToAssetPath(guid);
 				var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
 				if (asset != null) {
+					var so = new SerializedObject(asset);
+
 					var objectField = new ObjectField();
 					objectField.value = asset;
 					objectField.RegisterCallback<DragUpdatedEvent>(ev => ev.StopPropagation(), TrickleDown.TrickleDown);
@@ -43,13 +45,19 @@ namespace Grimoire.Inspector {
 					objectField.RegisterCallback<DragLeaveEvent>(ev => ev.StopPropagation(), TrickleDown.TrickleDown);
 					objectField.RegisterCallback<KeyDownEvent>(ev => ev.StopPropagation(), TrickleDown.TrickleDown);
 					objectField.AddToClassList(assetHeaderUssClassName);
-
 					if (!rows.ContainsKey("Asset")) {
 						rows["Asset"] = new();
 					}
 					rows["Asset"][i] = objectField;
 
-					var so = new SerializedObject(asset);
+					var scriptField = new PropertyField(so.FindProperty("m_Script"), "");
+					scriptField.Bind(so);
+					scriptField.SetEnabled(false);
+					if (!rows.ContainsKey("Script")) {
+						rows["Script"] = new();
+					}
+					rows["Script"][i] = scriptField;
+
 					var fieldIterator = so.GetIterator();
 					fieldIterator.NextVisible(true);
 					while (fieldIterator.NextVisible(false)) {
