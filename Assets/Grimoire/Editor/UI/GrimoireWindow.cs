@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
+using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -101,8 +104,10 @@ namespace Grimoire.Inspector {
 					tab.Add(tabData.sheetKey.CreateInstance());
 					sheet = tab.GetSheet();
 				}
-				sheet.assetIds = AssetDatabase.FindAssets(tabData.query);
-				sheet.Rebuild();
+				SearchService.Request(SearchService.CreateContext("asset", tabData.query), (context, items) => {
+					sheet.assets = items.Select(v => v.ToObject());
+					sheet.Rebuild();
+				});
 			}
 		}
 

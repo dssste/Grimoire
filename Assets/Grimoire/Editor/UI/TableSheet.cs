@@ -14,7 +14,7 @@ namespace Grimoire.Inspector {
 
 		private static string uxml_path = "Editor/UI/TableSheet.uxml";
 
-		public string[] assetIds { get; set; }
+		public IEnumerable<Object> assets { get; set; }
 
 		private bool isNonTransposed;
 
@@ -31,10 +31,9 @@ namespace Grimoire.Inspector {
 			resultContainer.Clear();
 
 			var rows = new Dictionary<string, Dictionary<int, VisualElement>>();
-			for (int i = 0; i < assetIds.Length; i++) {
-				var guid = assetIds[i];
-				var path = AssetDatabase.GUIDToAssetPath(guid);
-				var asset = AssetDatabase.LoadAssetAtPath<Object>(path);
+			var list = assets.ToList();
+			for (int i = 0; i < list.Count; i++) {
+				var asset = list[i];
 				if (asset != null) {
 					var so = new SerializedObject(asset);
 
@@ -44,21 +43,16 @@ namespace Grimoire.Inspector {
 					objectField.RegisterCallback<DragPerformEvent>(ev => ev.StopPropagation(), TrickleDown.TrickleDown);
 					objectField.RegisterCallback<DragLeaveEvent>(ev => ev.StopPropagation(), TrickleDown.TrickleDown);
 					objectField.RegisterCallback<KeyDownEvent>(ev => ev.StopPropagation(), TrickleDown.TrickleDown);
-					if (asset is ScriptableObject) {
-						var objectDisplayLabel = objectField.Q<TextElement>(className: "unity-object-field-display__label");
-						objectDisplayLabel.RegisterCallback<ChangeEvent<string>>(ev => {
-							ev.StopPropagation();
-							var value = ev.newValue;
-							int lastOpen = value.LastIndexOf(" (");
-							int lastClose = value.IndexOf(")", lastOpen);
-							if (lastOpen != -1 && lastClose != -1) {
-								value = value.Remove(lastOpen, lastClose - lastOpen + 1);
-							}
-							((INotifyValueChanged<string>)objectDisplayLabel).SetValueWithoutNotify(value);
-						}, TrickleDown.TrickleDown);
+					objectField.AddToClassList(assetHeaderUssClassName);
+
+					var objectDisplayLabel = objectField.Q<TextElement>(className: "unity-object-field-display__label");
+					var mainAsset = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GetAssetPath(asset));
+					if (mainAsset != null && mainAsset != asset) {
+						((INotifyValueChanged<string>)objectDisplayLabel).SetValueWithoutNotify($"{mainAsset.name} / {asset.name}");
+					} else if (asset is ScriptableObject) {
 						((INotifyValueChanged<string>)objectDisplayLabel).SetValueWithoutNotify(asset.name);
 					}
-					objectField.AddToClassList(assetHeaderUssClassName);
+
 					if (!rows.ContainsKey("Asset")) {
 						rows["Asset"] = new();
 					}

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -12,13 +13,13 @@ namespace Grimoire.Inspector {
 			Add(AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(GrimoireWindow.start_path + uxml_path).Instantiate());
 		}
 
-		public string[] assetIds { get; set; }
+		public IEnumerable<Object> assets { get; set; }
 
 		public void Rebuild() {
 			var resultContainer = this.Q<ScrollView>("result-container");
 			resultContainer.Clear();
-			foreach (var guid in assetIds) {
-				var asset = AssetDatabase.LoadAssetAtPath<Object>(AssetDatabase.GUIDToAssetPath(guid));
+
+			foreach (var asset in assets) {
 				if (asset != null) {
 					var ve = new VisualElement();
 					ve.AddToClassList("result-column");

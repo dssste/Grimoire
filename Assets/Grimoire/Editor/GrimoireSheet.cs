@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 
 namespace Grimoire.Inspector {
 	public interface IGrimoireSheet {
-		string[] assetIds { set; }
+		IEnumerable<UnityEngine.Object> assets { set; }
 		void Rebuild();
 	}
 
@@ -29,8 +29,7 @@ namespace Grimoire.Inspector {
 
 			static GrimoireSheetRegistry() {
 				entries = new();
-				foreach (var type in AppDomain.CurrentDomain.GetAssemblies()
-						.SelectMany(a => a.GetTypes())) {
+				foreach (var type in AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes())) {
 					if (!typeof(VisualElement).IsAssignableFrom(type)) continue;
 
 					var attrs = type.GetCustomAttributes<RegisterGrimoireSheetAttribute>(false);
